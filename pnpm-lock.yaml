@@ -11,6 +11,9 @@ importers:
       '@ckb-ccc/connector-react':
         specifier: ^1.0.0
         version: 1.0.16(@types/react@18.3.20)(react@18.3.1)(typescript@4.9.5)
+      '@ckb-ccc/core':
+        specifier: ^1.8.0
+        version: 1.8.0(typescript@4.9.5)
       '@testing-library/jest-dom':
         specifier: ^5.17.0
         version: 5.17.0
@@ -52,7 +55,7 @@ importers:
         version: 2.1.4
     devDependencies:
       '@biomejs/biome':
-        specifier: 1.9.4
+        specifier: ^1.9.4
         version: 1.9.4
       '@craco/craco':
         specifier: ^7.1.0

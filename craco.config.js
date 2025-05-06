@@ -11,6 +11,7 @@ module.exports = {
                 ".tsx",
                 ".js",
                 ".jsx",
+                ".toml"
             ];
 
             // 针对 'stream' 的 fallback 配置
@@ -18,6 +19,12 @@ module.exports = {
                 ...webpackConfig.resolve.fallback,
                 "stream": require.resolve("stream-browserify"),
             };
+
+            // Use the proper webpack module type for TOML files
+            webpackConfig.module.rules.push({
+                test: /\.toml$/,
+                type: 'asset/source',
+            });
 
             return webpackConfig;
         },
@@ -27,6 +34,13 @@ module.exports = {
                     Buffer: ['buffer', 'Buffer'],
                 }),
             ],
+        },
+    },
+    // Add devServer configuration with required headers for SharedArrayBuffer
+    devServer: {
+        headers: {
+            "Cross-Origin-Embedder-Policy": "require-corp",
+            "Cross-Origin-Opener-Policy": "same-origin"
         },
     },
 };

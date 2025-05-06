@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ConnectWallet from "./components/ConnectWallet";
-
+import { client, lightClientConfig } from "./lib/light-client";
+import { randomSecretKey } from "ckb-light-client-js";
 function App() {
+  const test = async () => {
+    await client.start({ type: "TestNet", config: lightClientConfig }, randomSecretKey(), "info");
+    console.log(await client.getTipHeader());
+  };
+
+  useEffect(() => {
+    test();
+  }, []);
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start max-w-2xl">
