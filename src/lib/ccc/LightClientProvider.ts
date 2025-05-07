@@ -49,7 +49,7 @@ function hasHeaderConfirmed(header: ClientBlockHeader): boolean {
 }
 
 export abstract class CCCLightClientProvider {
-  private client: LightClient;
+  protected client: LightClient;
   public cache: ClientCache;
 
   constructor(config?: { cache?: ClientCache; client?: LightClient }) {
@@ -58,8 +58,8 @@ export abstract class CCCLightClientProvider {
   }
 
   abstract get addressPrefix(): string;
-
   abstract getKnownScript(script: KnownScript): Promise<ScriptInfo>;
+
   abstract getFeeRateStatistics(blockRange?: NumLike): Promise<{ mean: Num; median: Num }>;
   abstract getTip(): Promise<Num>;
   abstract getTipHeader(verbosity?: number | null): Promise<ClientBlockHeader>;
@@ -81,28 +81,16 @@ export abstract class CCCLightClientProvider {
     blockHash: HexLike,
     verbosity?: number | null,
   ): Promise<ClientBlockHeader | undefined>;
-
+  abstract getCellsCapacity(key: ClientIndexerSearchKeyLike): Promise<Num>;
   abstract estimateCycles(transaction: TransactionLike): Promise<Num>;
   abstract sendTransactionDry(transaction: TransactionLike, validator?: OutputsValidator): Promise<Num>;
   abstract sendTransactionNoCache(transaction: TransactionLike, validator?: OutputsValidator): Promise<Hex>;
   abstract getTransactionNoCache(txHash: HexLike): Promise<ClientTransactionResponse | undefined>;
-
   abstract getCellLiveNoCache(
     outPointLike: OutPointLike,
     withData?: boolean | null,
     includeTxPool?: boolean | null,
   ): Promise<Cell | undefined>;
-  async getCellLive(
-    outPointLike: OutPointLike,
-    withData?: boolean | null,
-    includeTxPool?: boolean | null,
-  ): Promise<Cell | undefined> {
-    const cell = await this.getCellLiveNoCache(outPointLike, withData, includeTxPool);
-    if (withData && cell) {
-      await this.cache.recordCells(cell);
-    }
-    return cell;
-  }
   abstract findCellsPagedNoCache(
     key: ClientIndexerSearchKeyLike,
     order?: "asc" | "desc",
@@ -131,8 +119,7 @@ export abstract class CCCLightClientProvider {
     limit?: NumLike,
     after?: string,
   ): Promise<ClientFindTransactionsResponse | ClientFindTransactionsGroupedResponse>;
-  
-  
+
   async getBlockByNumber(
     blockNumber: NumLike,
     verbosity?: number | null,
@@ -213,6 +200,17 @@ export abstract class CCCLightClientProvider {
     await this.cache.recordCells(cell);
     return cell;
   }
+  async getCellLive(
+    outPointLike: OutPointLike,
+    withData?: boolean | null,
+    includeTxPool?: boolean | null,
+  ): Promise<Cell | undefined> {
+    const cell = await this.getCellLiveNoCache(outPointLike, withData, includeTxPool);
+    if (withData && cell) {
+      await this.cache.recordCells(cell);
+    }
+    return cell;
+  }
   async getCellWithHeader(outPointLike: OutPointLike): Promise<{ cell: Cell; header?: ClientBlockHeader } | undefined> {
     const outPoint = OutPoint.from(outPointLike);
 
@@ -234,7 +232,6 @@ export abstract class CCCLightClientProvider {
     await this.cache.recordCells(cell);
     return { cell, header };
   }
-
   async findCellsPaged(
     key: ClientIndexerSearchKeyLike,
     order?: "asc" | "desc",
@@ -245,7 +242,6 @@ export abstract class CCCLightClientProvider {
     await this.cache.recordCells(res.cells);
     return res;
   }
-
   async *findCellsOnChain(key: ClientIndexerSearchKeyLike, order?: "asc" | "desc", limit = 10): AsyncGenerator<Cell> {
     let last: string | undefined = undefined;
 
@@ -480,8 +476,6 @@ export abstract class CCCLightClientProvider {
     );
   }
 
-  abstract getCellsCapacity(key: ClientIndexerSearchKeyLike): Promise<Num>;
-
   async getBalanceSingle(lock: ScriptLike): Promise<Num> {
     return this.getCellsCapacity({
       script: lock,
@@ -506,7 +500,7 @@ export abstract class CCCLightClientProvider {
     const tx = Transaction.from(transaction);
 
     const maxFeeRate = numFrom(options?.maxFeeRate ?? DEFAULT_MAX_FEE_RATE);
-    const feeRate = numFrom(1000);  // todo fix this with light client
+    const feeRate = numFrom(1000); // todo fix this with light client
     if (maxFeeRate > Zero && feeRate > maxFeeRate) {
       throw new ErrorClientMaxFeeRateExceeded(maxFeeRate, feeRate);
     }
@@ -606,19 +600,5 @@ export abstract class CCCLightClientProvider {
       }
       await sleep(interval);
     }
-  }
-}
-
-export class LightClientPublicTestnet extends CCCLightClientProvider {
-  constructor(config?: { cache?: ClientCache; client?: LightClient }) {
-    super(config);
-  }
-  
-  
-}
-
-export class LightClientMainnet extends CCCLightClientProvider {
-  constructor(config?: { cache?: ClientCache; client?: LightClient }) {
-    super(config);
   }
 }
