@@ -1,18 +1,12 @@
-import { ccc } from "@ckb-ccc/core";
-import React, { createContext, useContext, useState, ReactNode, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef, useCallback } from "react";
 import { LightClientPublicTestnet } from "../lib/ccc/LightClientPublicTestnet";
 import { LightClientSetScriptsCommand, randomSecretKey } from "ckb-light-client-js";
 import { RemoteNode } from "ckb-light-client-js";
 import configRaw from "../lib/config.toml";
 
-interface NostrContextType {
+// Light Client Context
+export interface LightClientContextType {
   client: LightClientPublicTestnet;
-  signer: ccc.SignerNostrPrivateKey;
-  nostrAccount: {
-    publicKey: string;
-    privateKey: string;
-  };
-  setNostrAccount: (account: { publicKey: string; privateKey: string }) => void;
   isInitialized: boolean;
   peers: RemoteNode[];
   connections: bigint | null;
@@ -20,25 +14,21 @@ interface NostrContextType {
   syncedBlockNumber: bigint | null;
   startPeersUpdate: () => void;
   stopPeersUpdate: () => void;
-  initializeClient: () => Promise<void>;
+  initializeClient: (script?: any) => Promise<void>;
 }
 
-const NostrContext = createContext<NostrContextType | undefined>(undefined);
+const LightClientContext = createContext<LightClientContextType | undefined>(undefined);
 
-export const NostrProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [nostrAccount, setNostrAccount] = useState<{ publicKey: string; privateKey: string }>({
-    publicKey: "f879eb8207a69c1429267ab666cf722f18edc8549253e81be5a1ef93513e14dc",
-    privateKey: "fda2c1f734627f6c4c4220858f8630dbdf778a4bfaee4c657cb4a91ef5c56333",
-  });
+export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [peers, setPeers] = useState<RemoteNode[]>([]);
   const [connections, setConnections] = useState<bigint | null>(null);
   const [tipBlockNumber, setTipBlockNumber] = useState<bigint | null>(null);
   const [syncedBlockNumber, setSyncedBlockNumber] = useState<bigint | null>(null);
+  const [clientReady, setClientReady] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const clientRef = useRef<LightClientPublicTestnet | null>(null);
-  const signerRef = useRef<ccc.SignerNostrPrivateKey | null>(null);
 
   // 只初始化一次客户端
   useEffect(() => {
@@ -48,7 +38,7 @@ export const NostrProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         syncingKey: randomSecretKey(),
       });
       clientRef.current = client;
-      signerRef.current = new ccc.SignerNostrPrivateKey(client, nostrAccount.privateKey);
+      setClientReady(true);
     }
 
     return () => {
@@ -57,32 +47,24 @@ export const NostrProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       if (clientRef.current) {
         clientRef.current = null;
       }
-      signerRef.current = null;
     };
   }, []);
 
-  // 当nostrAccount变化时更新signer
-  useEffect(() => {
-    if (clientRef.current) {
-      signerRef.current = new ccc.SignerNostrPrivateKey(clientRef.current, nostrAccount.privateKey);
-    }
-  }, [nostrAccount]);
-
   const updatePeers = async () => {
     if (!clientRef.current) return;
-    
+
     try {
       const peers = await clientRef.current.getPeers();
       const localNodeInfo = await clientRef.current.localNodeInfo();
       const tipHeader = await clientRef.current.getTipHeader();
       const res = await clientRef.current.getScripts();
-      
+
       // 设置新数据前清理旧数据
       setPeers([]);
       setConnections(null);
       setTipBlockNumber(null);
       setSyncedBlockNumber(null);
-      
+
       // 设置新数据
       setPeers(peers);
       setConnections(localNodeInfo.connections);
@@ -98,7 +80,7 @@ export const NostrProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const startPeersUpdate = () => {
     if (intervalRef.current) return;
     updatePeers(); // 立即更新一次
-    intervalRef.current = setInterval(updatePeers, 5000); // 增加间隔到5秒
+    intervalRef.current = setInterval(updatePeers, 5000); // 5-second interval
   };
 
   const stopPeersUpdate = () => {
@@ -108,29 +90,37 @@ export const NostrProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
-  const initializeClient = useCallback(async () => {
-    try {
-      if (clientRef.current && !isInitialized && signerRef.current) {
-        await clientRef.current.startSync();
-        const addr = await signerRef.current.getRecommendedAddressObj();
-        await clientRef.current.setScripts(
-          [{ blockNumber: BigInt(17107327), script: addr.script, scriptType: "lock" }],
-          LightClientSetScriptsCommand.All,
-        );
-        setIsInitialized(true);
+  const initializeClient = useCallback(
+    async (script?: any) => {
+      try {
+        if (clientRef.current && !isInitialized) {
+          await clientRef.current.startSync();
+
+          if (script) {
+            await clientRef.current.setScripts(
+              [{ blockNumber: BigInt(17107327), script, scriptType: "lock" }],
+              LightClientSetScriptsCommand.All,
+            );
+          }
+
+          setIsInitialized(true);
+        }
+      } catch (error) {
+        console.error("Failed to initialize client:", error);
       }
-    } catch (error) {
-      console.error("Failed to initialize client:", error);
-    }
-  }, [isInitialized]);
+    },
+    [isInitialized],
+  );
+
+  // Ensure client is available before providing context
+  if (!clientRef.current || !clientReady) {
+    return <div>Loading light client...</div>; // Show a loading indicator
+  }
 
   return (
-    <NostrContext.Provider
+    <LightClientContext.Provider
       value={{
-        client: clientRef.current!,
-        signer: signerRef.current!,
-        nostrAccount,
-        setNostrAccount,
+        client: clientRef.current,
         isInitialized,
         peers,
         connections,
@@ -142,14 +132,14 @@ export const NostrProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       }}
     >
       {children}
-    </NostrContext.Provider>
+    </LightClientContext.Provider>
   );
 };
 
-export const useNostr = () => {
-  const context = useContext(NostrContext);
+export const useLightClient = () => {
+  const context = useContext(LightClientContext);
   if (context === undefined) {
-    throw new Error("useNostr must be used within a NostrProvider");
+    throw new Error("useLightClient must be used within a LightClientProvider");
   }
   return context;
 };
