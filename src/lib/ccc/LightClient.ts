@@ -128,4 +128,8 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
   async getPeers() {
     return await this.client.getPeers();
   }
+
+  async localNodeInfo() {
+    return await this.client.localNodeInfo();
+  }
 }

@@ -1,55 +1,84 @@
 import { ccc } from "@ckb-ccc/core";
 import React, { useEffect, useState } from "react";
-import configRaw from "../lib/config.toml";
-import { LightClientPublicTestnet } from "../lib/ccc/LightClientPublicTestnet";
-import { randomSecretKey, RemoteNode } from "ckb-light-client-js";
+import { LightClientSetScriptsCommand, RemoteNode } from "ckb-light-client-js";
 import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
+import { useNostr } from "../contexts/NostrContext";
 
 export const NostrWallet: React.FC = () => {
-  const [nostrAccount, setNostrAccount] = useState<{ publicKey: string; privateKey: string }>({
-    publicKey: "f879eb8207a69c1429267ab666cf722f18edc8549253e81be5a1ef93513e14dc",
-    privateKey: "fda2c1f734627f6c4c4220858f8630dbdf778a4bfaee4c657cb4a91ef5c56333",
-  });
-
+  const { client, signer, nostrAccount, setNostrAccount } = useNostr();
   const [recommendedAddress, setRecommendedAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<bigint | null>(null);
   const [peers, setPeers] = useState<RemoteNode[]>([]);
+  const [connections, setConnections] = useState<bigint | null>(null);
+  const [newPublicKey, setNewPublicKey] = useState("");
+  const [newPrivateKey, setNewPrivateKey] = useState("");
 
-  const client = new LightClientPublicTestnet({
-    lightClientConfig: configRaw,
-    syncingKey: randomSecretKey(),
-  });
-
-  const signer = new ccc.SignerNostrPrivateKey(client, nostrAccount.privateKey);
+  const updateAccount = () => {
+    if (newPublicKey && newPrivateKey) {
+      setNostrAccount({
+        publicKey: newPublicKey,
+        privateKey: newPrivateKey,
+      });
+      setNewPublicKey("");
+      setNewPrivateKey("");
+    }
+  };
 
   const getBalance = async () => {
     const tipHeader = await client.getTipHeader();
     console.log("tipHeader.number: ", tipHeader.number);
-    const addrs = await signer.getAddressObjs();
+    await client.getScripts();
+    const addr = await signer.getRecommendedAddressObj();
     const searchKey = {
       scriptType: "lock",
-      script: addrs[0].script,
+      script: addr.script,
       scriptSearchMode: "prefix",
     } as ClientCollectableSearchKeyLike;
     const capacity = await client.getCellsCapacity(searchKey);
-    console.log(addrs[0], capacity);
+    console.log(addr, capacity);
     setBalance(capacity);
   };
 
   const updatePeers = async () => {
     await client.startSync();
+    const addr = await signer.getRecommendedAddressObj();
+    await client.setScripts(
+      [{ blockNumber: BigInt(17107327), script: addr.script, scriptType: "lock" }],
+      LightClientSetScriptsCommand.All,
+    );
     while (true) {
       console.log("updatePeers...");
       const peers = await client.getPeers();
       setPeers(peers);
+      const localNodeInfo = await client.localNodeInfo();
+      setConnections(localNodeInfo.connections);
       await new Promise((resolve) => setTimeout(resolve, 3000));
     }
   };
 
   return (
     <div>
-      <div>
-        <p>Nostr Account: {nostrAccount.publicKey}</p>
+      <div className="mb-4">
+        <p className="mb-2">Current Nostr Account: {nostrAccount.publicKey}</p>
+        <div className="flex flex-col gap-2">
+          <input
+            type="text"
+            value={newPublicKey}
+            onChange={(e) => setNewPublicKey(e.target.value)}
+            placeholder="New Public Key"
+            className="p-2 border rounded"
+          />
+          <input
+            type="text"
+            value={newPrivateKey}
+            onChange={(e) => setNewPrivateKey(e.target.value)}
+            placeholder="New Private Key"
+            className="p-2 border rounded"
+          />
+          <button className="bg-green-500 text-white p-2 rounded-md" onClick={updateAccount}>
+            Update Account
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <div>
@@ -57,7 +86,8 @@ export const NostrWallet: React.FC = () => {
             Update Peers
           </button>
         </div>
-	<div>{peers.length}</div>
+        <div>peers: {peers.length}</div>
+        <div>Connections: {+(connections?.toString(10) ?? 0)}</div>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -73,12 +103,6 @@ export const NostrWallet: React.FC = () => {
               >
                 Connected Duration
               </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Addresses
-              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -87,15 +111,6 @@ export const NostrWallet: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nodeId}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {Math.floor(Number(item.connestedDuration) / 1000 / 60)} min
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  <ul className="list-disc pl-5 space-y-1">
-                    {item.addresses.map((itemAddr) => (
-                      <li key={itemAddr.address} className="break-all">
-                        {itemAddr.address} （{Number(itemAddr.score)}）
-                      </li>
-                    ))}
-                  </ul>
                 </td>
               </tr>
             ))}
