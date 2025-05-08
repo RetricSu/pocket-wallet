@@ -1,15 +1,24 @@
-import { ccc } from "@ckb-ccc/core";
 import React, { useEffect, useState } from "react";
-import { LightClientSetScriptsCommand, RemoteNode } from "ckb-light-client-js";
 import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
 import { useNostr } from "../contexts/NostrContext";
 
 export const NostrWallet: React.FC = () => {
-  const { client, signer, nostrAccount, setNostrAccount } = useNostr();
+  const {
+    client,
+    signer,
+    nostrAccount,
+    setNostrAccount,
+    peers,
+    connections,
+    startPeersUpdate,
+    stopPeersUpdate,
+    isInitialized,
+    initializeClient,
+    tipBlockNumber,
+    syncedBlockNumber,
+  } = useNostr();
   const [recommendedAddress, setRecommendedAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<bigint | null>(null);
-  const [peers, setPeers] = useState<RemoteNode[]>([]);
-  const [connections, setConnections] = useState<bigint | null>(null);
   const [newPublicKey, setNewPublicKey] = useState("");
   const [newPrivateKey, setNewPrivateKey] = useState("");
 
@@ -25,36 +34,37 @@ export const NostrWallet: React.FC = () => {
   };
 
   const getBalance = async () => {
-    const tipHeader = await client.getTipHeader();
-    console.log("tipHeader.number: ", tipHeader.number);
-    await client.getScripts();
-    const addr = await signer.getRecommendedAddressObj();
-    const searchKey = {
-      scriptType: "lock",
-      script: addr.script,
-      scriptSearchMode: "prefix",
-    } as ClientCollectableSearchKeyLike;
-    const capacity = await client.getCellsCapacity(searchKey);
-    console.log(addr, capacity);
-    setBalance(capacity);
-  };
-
-  const updatePeers = async () => {
-    await client.startSync();
-    const addr = await signer.getRecommendedAddressObj();
-    await client.setScripts(
-      [{ blockNumber: BigInt(17107327), script: addr.script, scriptType: "lock" }],
-      LightClientSetScriptsCommand.All,
-    );
-    while (true) {
-      console.log("updatePeers...");
-      const peers = await client.getPeers();
-      setPeers(peers);
-      const localNodeInfo = await client.localNodeInfo();
-      setConnections(localNodeInfo.connections);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+      if (!isInitialized) {
+        await initializeClient();
+      }
+      const addr = await signer.getRecommendedAddressObj();
+      const searchKey = {
+        scriptType: "lock",
+        script: addr.script,
+        scriptSearchMode: "prefix",
+      } as ClientCollectableSearchKeyLike;
+      const capacity = await client.getCellsCapacity(searchKey);
+      console.log(addr, capacity);
+      setBalance(capacity);
+    } catch (error) {
+      console.error("Failed to get balance:", error);
+      setBalance(null);
     }
   };
+
+  const setupPeersUpdate = async () => {
+    if (!isInitialized) {
+      await initializeClient();
+    }
+    startPeersUpdate();
+  };
+
+  useEffect(() => {
+    return () => {
+      stopPeersUpdate();
+    };
+  }, []);
 
   return (
     <div>
@@ -82,11 +92,16 @@ export const NostrWallet: React.FC = () => {
       </div>
       <div className="overflow-x-auto">
         <div>
-          <button className="bg-blue-500 text-white p-2 rounded-md" onClick={updatePeers}>
-            Update Peers
+          <button className="bg-blue-500 text-white p-2 rounded-md" onClick={setupPeersUpdate}>
+            Start Peers Update
+          </button>
+          <button className="bg-red-500 text-white p-2 rounded-md ml-2" onClick={stopPeersUpdate}>
+            Stop Peers Update
           </button>
         </div>
-        <div>peers: {peers.length}</div>
+        <div>
+          peers: {peers.length}, {syncedBlockNumber?.toString()}/{tipBlockNumber?.toString()}
+        </div>
         <div>Connections: {+(connections?.toString(10) ?? 0)}</div>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
