@@ -14,6 +14,7 @@ export interface LightClientContextType {
   syncedBlockNumber: bigint | null;
   startPeersUpdate: () => void;
   stopPeersUpdate: () => void;
+  isUpdatingPeers: boolean;
   initializeClient: (script?: any) => Promise<void>;
 }
 
@@ -26,6 +27,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [tipBlockNumber, setTipBlockNumber] = useState<bigint | null>(null);
   const [syncedBlockNumber, setSyncedBlockNumber] = useState<bigint | null>(null);
   const [clientReady, setClientReady] = useState(false);
+  const [isUpdatingPeers, setIsUpdatingPeers] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const clientRef = useRef<LightClientPublicTestnet | null>(null);
@@ -80,6 +82,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
   const startPeersUpdate = () => {
     if (intervalRef.current) return;
     updatePeers(); // 立即更新一次
+    setIsUpdatingPeers(true);
     intervalRef.current = setInterval(updatePeers, 5000); // 5-second interval
   };
 
@@ -87,6 +90,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
+      setIsUpdatingPeers(false);
     }
   };
 
@@ -126,6 +130,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
         connections,
         startPeersUpdate,
         stopPeersUpdate,
+        isUpdatingPeers,
         initializeClient,
         tipBlockNumber,
         syncedBlockNumber,

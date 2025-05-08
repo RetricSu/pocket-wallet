@@ -1,7 +1,12 @@
 import { useLightClient } from "../contexts";
 
 export const Header = () => {
-  const { connections, tipBlockNumber, syncedBlockNumber } = useLightClient();
+  const {
+    connections,
+    tipBlockNumber,
+    syncedBlockNumber,
+    isUpdatingPeers,
+  } = useLightClient();
 
   const syncedPercentage =
     syncedBlockNumber && tipBlockNumber ? (Number(syncedBlockNumber) / Number(tipBlockNumber)) * 100 : 0;
@@ -37,7 +42,7 @@ export const Header = () => {
           <div className="group relative flex items-center gap-2 text-sm text-gray-400">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-5 w-5 ${truncatedPercentage < 100 ? "animate-spin" : ""}`}
+              className={`h-5 w-5 ${isUpdatingPeers && (truncatedPercentage < 100) ? "animate-spin" : ""}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -52,9 +57,9 @@ export const Header = () => {
             <span>{truncatedPercentage.toFixed(4)}%</span>
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-navy-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap">
               <div className="text-xs">
-                <div>Tip Block: {tipBlockNumber?.toString() || "-"}</div>
+                <div>Tip Block {tipBlockNumber?.toString() || "-"}</div>
                 <div>
-                  Synced {syncedBlockNumber?.toString() || "-"}, behind{" "}
+                  Synced behind{" "}
                   {parseInt(tipBlockNumber?.toString() ?? "0") - parseInt(syncedBlockNumber?.toString() ?? "-")} blocks
                 </div>
               </div>
