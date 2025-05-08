@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
 import { useLightClient, useNostrSigner } from "../contexts";
+import { Header } from "./Header";
 
 export const NostrWallet: React.FC = () => {
   const {
@@ -87,37 +88,12 @@ export const NostrWallet: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-navy-900 text-white">
-      {/* Header with Network Selector */}
-      <header className="bg-navy-800 shadow-md">
-        <div className="w-full max-w-6xl mx-auto px-4 flex justify-between items-center py-4">
-          <h1 className="text-2xl font-bold text-blue-400">Nostr Wallet</h1>
-          <div className="flex items-center gap-4">
-            <select className="bg-navy-700 text-blue-300 font-semibold px-5 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 hover:bg-navy-600 transition-colors shadow-none">
-              <option>Mainnet</option>
-              <option>Testnet</option>
-            </select>
-            <button className="bg-navy-700/50 p-2 rounded-lg hover:bg-navy-700 transition-colors">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-blue-300"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* 主体区域，左右两栏布局 */}
       <div className="w-full max-w-6xl mx-auto flex gap-8 py-10 px-4">
         {/* 左侧边栏 */}
-        <aside className="w-72 min-h-[calc(100vh-80px)] bg-navy-900 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+        <aside className="w-72 min-h-[calc(100vh-80px)] bg-navy-900 rounded-2xl p-6 flex flex-col justify-between shadow-xl border-l border-r">
           <div className="space-y-2">
             <button
               onClick={() => setActiveTab("assets")}
@@ -330,30 +306,27 @@ export const NostrWallet: React.FC = () => {
                 <span className={isInitialized ? "text-green-400" : "text-red-400"}>
                   {isInitialized ? "Yes" : "No"}
                 </span>
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors"
+                  onClick={setupPeersUpdate}
+                >
+                  Start Peers Update
+                </button>
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors"
+                  onClick={stopPeersUpdateHandler}
+                >
+                  Stop Peers Update
+                </button>
               </div>
               <div className="mb-4">
                 <span className="text-gray-400">Peers: </span>
                 <span className="text-blue-300">{Array.isArray(peers) ? peers.length : 0}</span>
                 <ul className="mt-2 ml-4 list-disc text-sm text-gray-300">
                   {Array.isArray(peers) && peers.length > 0 ? (
-                    peers.map((peer: any, idx: number) => (
-                      <li key={idx}>{typeof peer === "string" ? peer : JSON.stringify(peer)}</li>
-                    ))
+                    peers.map((peer, idx: number) => <li key={idx}>{peer.nodeId}</li>)
                   ) : (
                     <li>No peers</li>
-                  )}
-                </ul>
-              </div>
-              <div className="mb-4">
-                <span className="text-gray-400">Connections: </span>
-                <span className="text-blue-300">{Array.isArray(connections) ? connections.length : 0}</span>
-                <ul className="mt-2 ml-4 list-disc text-sm text-gray-300">
-                  {Array.isArray(connections) && connections.length > 0 ? (
-                    connections.map((conn: any, idx: number) => (
-                      <li key={idx}>{typeof conn === "string" ? conn : JSON.stringify(conn)}</li>
-                    ))
-                  ) : (
-                    <li>No connections</li>
                   )}
                 </ul>
               </div>
