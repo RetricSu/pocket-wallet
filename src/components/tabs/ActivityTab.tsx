@@ -1,4 +1,4 @@
-import { CellOutputLike, ClientBlockHeader, Hex, Transaction } from "@ckb-ccc/core";
+import { ccc, CellOutputLike, ClientBlockHeader, Hex, Transaction } from "@ckb-ccc/core";
 import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
 import React, { useEffect, useState } from "react";
 import { useLightClient, useNostrSigner } from "../../contexts";
@@ -78,7 +78,7 @@ export const ActivityTab: React.FC = () => {
           <thead>
             <tr className="text-left text-sm font-medium text-gray-400">
               <th className="px-6 py-3">Transaction Hash</th>
-              <th className="px-6 py-3">Balance Change</th>
+              <th className="px-6 py-3">Balance Change(CKB)</th>
               <th className="px-6 py-3">Date</th>
             </tr>
           </thead>
@@ -96,9 +96,7 @@ export const ActivityTab: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 text-sm">
                   <span className={`${tx.balanceChange >= 0 ? "text-green-400" : "text-red-400"}`}>
-                    {tx.balanceChange >= 0
-                      ? formatCKBBalance(tx.balanceChange)
-                      : `-${formatCKBBalance(Math.abs(+tx.balanceChange.toString()))}`}
+                    {formatCKBBalance(tx.balanceChange)}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-300">{new Date(tx.timestamp).toLocaleString()}</td>

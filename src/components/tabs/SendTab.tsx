@@ -34,7 +34,7 @@ export const SendTab: React.FC = () => {
     setTimeout(() => {
       setSendStatus("idle");
       setTxHash(null);
-    }, 2000);
+    }, 6000);
     console.log("Transaction sent:", hash);
   };
 
@@ -66,14 +66,22 @@ export const SendTab: React.FC = () => {
           className="w-full bg-blue-600 py-3 rounded-lg hover:bg-blue-500 font-medium transition-colors"
           onClick={handleSend}
         >
-          {sendStatus === "success" ? (
-            <a href={`https://explorer.nervos.org/transaction/${txHash}`} target="_blank" rel="noopener noreferrer">
-              View {truncateAddress(txHash || "", 8, 8)} on Explorer
-            </a>
-          ) : (
-            "Send"
-          )}
+          Send
         </button>
+        {sendStatus === "success" && (
+          <div className="text-green-400 text-center my-2">
+            Successfully sent, view
+            <a
+              className="text-blue-400 mx-2"
+              href={`https://explorer.nervos.org/transaction/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {truncateAddress(txHash || "", 8, 8)}
+            </a>
+            on CKB Explorer
+          </div>
+        )}
       </div>
     </div>
   );
