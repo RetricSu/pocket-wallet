@@ -40,14 +40,15 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
   }
 
   async getFeeRateStatistics(blockRange?: NumLike): Promise<{ mean: Num; median: Num }> {
-    throw new Error("Not implemented");
+    // todo: light-client has no such method so we just hardcode a value
+    return { mean: BigInt(1000), median: BigInt(1000) };
   }
   async getTip(): Promise<Num> {
     const tipHeader = await this.client.getTipHeader();
     return tipHeader.number;
   }
   async getTipHeader(_verbosity?: number | null): Promise<ClientBlockHeader> {
-    return this.client.getTipHeader();
+    return await this.client.getTipHeader();
   }
   async getBlockByNumberNoCache(
     blockNumber: NumLike,
@@ -70,14 +71,14 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
     throw new Error("Not implemented");
   }
   async getHeaderByHashNoCache(blockHash: HexLike, verbosity?: number | null): Promise<ClientBlockHeader | undefined> {
-    throw new Error("Not implemented");
+    return await this.client.getHeader(blockHash);
   }
   async getCellsCapacity(key: ClientIndexerSearchKeyLike): Promise<Num> {
     const cells = await this.client.getCellsCapacity(key);
-    console.log(key, cells);
     return cells;
   }
   async estimateCycles(transaction: TransactionLike): Promise<Num> {
+    //todo: update light-client-js's ccc deps version to make this compatible
     return this.client.estimateCycles(transaction as any);
   }
   async sendTransactionDry(transaction: TransactionLike, validator?: OutputsValidator): Promise<Num> {
@@ -87,6 +88,7 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
     return this.client.sendTransaction(transaction as any);
   }
   async getTransactionNoCache(txHash: HexLike): Promise<ClientTransactionResponse | undefined> {
+    //todo: update light-client-js's ccc deps version to make this compatible
     return this.client.getTransaction(txHash) as any;
   }
   async getCellLiveNoCache(
@@ -94,6 +96,7 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
     withData?: boolean | null,
     includeTxPool?: boolean | null,
   ): Promise<Cell | undefined> {
+    console.log("getCellLiveNoCache not working: ", outPointLike, withData, includeTxPool);
     throw new Error("Not implemented");
   }
   async findCellsPagedNoCache(
@@ -102,7 +105,8 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
     limit?: NumLike,
     after?: string,
   ): Promise<ClientFindCellsResponse> {
-    throw new Error("Not implemented");
+    //todo: update light-client-js's ccc deps version to make this compatible
+    return (await this.client.getCells(key, order, limit, after as Hex)) as any;
   }
   async findTransactionsPaged(
     key: ClientIndexerSearchKeyTransactionLike,
@@ -110,7 +114,8 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
     limit?: NumLike,
     after?: string,
   ): Promise<ClientFindTransactionsResponse | ClientFindTransactionsGroupedResponse | any> {
-    throw new Error("Not implemented");
+    //todo: update light-client-js's ccc deps version to make this compatible
+    return (await this.client.getTransactions(key, order, limit, after as Hex)) as any;
   }
 
   // the original light client method

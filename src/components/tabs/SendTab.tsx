@@ -1,10 +1,12 @@
 import { ccc } from "@ckb-ccc/core";
 import React, { useState } from "react";
+import { useLightClient } from "../../contexts";
 import { useNostrSigner } from "../../contexts";
 import { truncateAddress } from "../../utils/stringUtils";
 
 export const SendTab: React.FC = () => {
   const { signer } = useNostrSigner();
+  const { client } = useLightClient();
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [sendStatus, setSendStatus] = useState<"idle" | "success">("idle");
@@ -19,6 +21,13 @@ export const SendTab: React.FC = () => {
     });
     await tx.completeInputsByCapacity(signer);
     await tx.completeFeeBy(signer); // Transaction fee rate is calculated automatically
+    console.log("Sending transaction:", tx);
+
+    for (const deps of tx.cellDeps) {
+      const tx = await client.fetchTransaction(deps.outPoint.txHash);
+      console.log("celldep Transaction:", tx);
+    }
+
     const hash = await signer.sendTransaction(tx);
     setTxHash(hash);
     setSendStatus("success");
