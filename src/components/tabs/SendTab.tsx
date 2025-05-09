@@ -24,7 +24,7 @@ export const SendTab: React.FC = () => {
     console.log("Sending transaction:", tx);
 
     for (const deps of tx.cellDeps) {
-      const tx = await client.fetchTransaction(deps.outPoint.txHash);
+      const tx = await client.lightClient.fetchTransaction(deps.outPoint.txHash);
       console.log("celldep Transaction:", tx);
     }
 

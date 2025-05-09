@@ -49,11 +49,11 @@ function hasHeaderConfirmed(header: ClientBlockHeader): boolean {
 }
 
 export abstract class CCCLightClientProvider {
-  protected client: LightClient;
+  public lightClient: LightClient;
   public cache: ClientCache;
 
   constructor(config?: { cache?: ClientCache; client?: LightClient }) {
-    this.client = config?.client ?? new LightClient();
+    this.lightClient = config?.client ?? new LightClient();
     this.cache = config?.cache ?? new ClientCacheMemory();
   }
 

@@ -12,7 +12,7 @@ export interface DisplayTransaction {
 
 export const ActivityTab: React.FC = () => {
   const { signer } = useNostrSigner();
-  const { client, isInitialized, initializeClient } = useLightClient();
+  const { client, isClientStart: isInitialized } = useLightClient();
 
   const [transactions, setTransactions] = useState<DisplayTransaction[]>([]);
 
@@ -26,10 +26,8 @@ export const ActivityTab: React.FC = () => {
       script,
       scriptSearchMode: "prefix",
     } as ClientCollectableSearchKeyLike;
-    if (!isInitialized) {
-      await initializeClient();
-    }
-    const txs = await client.getTransactions(searchKey, "desc", 100);
+
+    const txs = await client.lightClient.getTransactions(searchKey, "desc", 100);
     const validateCell = (v: CellOutputLike) =>
       v.lock?.args === script.args && v.lock?.codeHash === script.codeHash && v.lock?.hashType === script.hashType;
 
@@ -42,12 +40,12 @@ export const ActivityTab: React.FC = () => {
       let inputCapSum = BigInt(0);
       await (async () => {
         for (const input of currTx.inputs) {
-          const inputTx = await client.fetchTransaction(input.previousOutput.txHash);
+          const inputTx = await client.lightClient.fetchTransaction(input.previousOutput.txHash);
           if (inputTx.status !== "fetched") return;
           const previousOutput = inputTx.data.transaction.outputs[Number(input.previousOutput.index)];
           if (validateCell(previousOutput)) inputCapSum += previousOutput.capacity;
         }
-        const currTxBlockDetail: ClientBlockHeader = (await client.getHeader(
+        const currTxBlockDetail: ClientBlockHeader = (await client.lightClient.getHeader(
           (await client.getTransaction(currTx.hash()))!.blockHash!,
         ))!;
         if (!resultTx.find((tx) => tx.txHash === currTx.hash())) {

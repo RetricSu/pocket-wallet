@@ -8,23 +8,19 @@ interface NetworkTabProps {}
 
 export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
   const {
-    isInitialized,
+    isClientStart: isInitialized,
     peers,
     connections,
-    initializeClient,
     tipBlockNumber,
     syncedBlockNumber,
-    startPeersUpdate,
-    stopPeersUpdate,
+    startUpdateSyncStatus: startPeersUpdate,
+    stopUpdateSyncStatus: stopPeersUpdate,
   } = useLightClient();
 
   const [isUpdatingPeers, setIsUpdatingPeers] = useState<boolean>(false);
 
   const setupPeersUpdate = async () => {
     try {
-      if (!isInitialized) {
-        await initializeClient();
-      }
       setIsUpdatingPeers(true);
       startPeersUpdate();
     } catch (error) {

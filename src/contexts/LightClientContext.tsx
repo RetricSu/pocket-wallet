@@ -1,38 +1,37 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef, useCallback } from "react";
 import { LightClientPublicTestnet } from "../lib/ccc/LightClientPublicTestnet";
-import { LightClientSetScriptsCommand, randomSecretKey } from "ckb-light-client-js";
+import { LightClientSetScriptsCommand, randomSecretKey, ScriptStatus } from "ckb-light-client-js";
 import { RemoteNode } from "ckb-light-client-js";
 import configRaw from "../lib/config.toml";
 
-// Light Client Context
 export interface LightClientContextType {
   client: LightClientPublicTestnet;
-  isInitialized: boolean;
+  isClientReady: boolean;
+  isClientStart: boolean;
+  isUpdatingSyncStatus: boolean;
   peers: RemoteNode[];
   connections: bigint | null;
   tipBlockNumber: bigint | null;
   syncedBlockNumber: bigint | null;
-  startPeersUpdate: () => void;
-  stopPeersUpdate: () => void;
-  isUpdatingPeers: boolean;
-  initializeClient: (script?: any) => Promise<void>;
+  startUpdateSyncStatus: () => void;
+  stopUpdateSyncStatus: () => void;
 }
 
 const LightClientContext = createContext<LightClientContextType | undefined>(undefined);
 
 export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isClientReady, setIsClientReady] = useState(false);
+  const [isClientStart, setIsClientStart] = useState(false);
+  const [isUpdatingSyncStatus, setIsUpdatingSyncStatus] = useState(false);
   const [peers, setPeers] = useState<RemoteNode[]>([]);
   const [connections, setConnections] = useState<bigint | null>(null);
   const [tipBlockNumber, setTipBlockNumber] = useState<bigint | null>(null);
   const [syncedBlockNumber, setSyncedBlockNumber] = useState<bigint | null>(null);
-  const [clientReady, setClientReady] = useState(false);
-  const [isUpdatingPeers, setIsUpdatingPeers] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const clientRef = useRef<LightClientPublicTestnet | null>(null);
 
-  // 只初始化一次客户端
+  // only initialize the client once
   useEffect(() => {
     if (!clientRef.current) {
       const client = new LightClientPublicTestnet({
@@ -40,100 +39,117 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
         syncingKey: randomSecretKey(),
       });
       clientRef.current = client;
-      setClientReady(true);
+      setIsClientReady(true);
     }
 
     return () => {
-      stopPeersUpdate();
-      // 组件卸载时清理资源
+      if (isUpdatingSyncStatus) {
+        stopUpdateSyncStatus();
+      }
       if (clientRef.current) {
         clientRef.current = null;
+        setIsClientReady(false);
+        setIsClientStart(false);
       }
     };
   }, []);
 
-  const updatePeers = async () => {
-    if (!clientRef.current) return;
+  const startLightClient = useCallback(
+    async (scripts?: ScriptStatus[], command?: LightClientSetScriptsCommand) => {
+      console.log("startLightClient...", scripts, command);
+      try {
+        if (clientRef.current && !isClientStart) {
+          setIsClientStart(true);
+          await clientRef.current.start();
+
+          if (scripts && scripts.length > 0) {
+            await clientRef.current.lightClient.setScripts(scripts, command);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to initialize client:", error);
+        setIsClientStart(false);
+      }
+    },
+    [isClientStart, clientRef.current, setIsClientStart],
+  );
+
+  useEffect(() => {
+    if (!isClientStart) {
+      startLightClient();
+    }
+  }, [isClientStart, startLightClient]);
+
+  function stopUpdateSyncStatus() {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      setIsUpdatingSyncStatus(false);
+    }
+  }
+
+  const updateSyncStatus = useCallback(async () => {
+    if (!clientRef.current) {
+      setIsUpdatingSyncStatus(false);
+      return;
+    }
 
     try {
-      const peers = await clientRef.current.getPeers();
-      const localNodeInfo = await clientRef.current.localNodeInfo();
-      const tipHeader = await clientRef.current.getTipHeader();
-      const res = await clientRef.current.getScripts();
+      const [peers, localNodeInfo, tipHeader, res] = await Promise.all([
+        clientRef.current.lightClient.getPeers(),
+        clientRef.current.lightClient.localNodeInfo(),
+        clientRef.current.lightClient.getTipHeader(),
+        clientRef.current.lightClient.getScripts(),
+      ]);
 
-      // 设置新数据前清理旧数据
+      // clean old data before setting new data
       setPeers([]);
       setConnections(null);
       setTipBlockNumber(null);
       setSyncedBlockNumber(null);
 
-      // 设置新数据
+      // set new data
       setPeers(peers);
       setConnections(localNodeInfo.connections);
       setTipBlockNumber(tipHeader.number);
       setSyncedBlockNumber(res[0]?.blockNumber);
     } catch (error) {
       console.error("Failed to update peers:", error);
-      // 出错时停止更新
-      stopPeersUpdate();
     }
-  };
+  }, []); // no dependencies, stopUpdateSyncStatus is stable
 
-  const startPeersUpdate = () => {
-    if (intervalRef.current) return;
-    updatePeers(); // 立即更新一次
-    setIsUpdatingPeers(true);
-    intervalRef.current = setInterval(updatePeers, 5000); // 5-second interval
-  };
-
-  const stopPeersUpdate = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-      setIsUpdatingPeers(false);
+  function startUpdateSyncStatus() {
+    if (intervalRef.current || isUpdatingSyncStatus) {
+      console.warn("updateSyncStatus is already running");
+      return;
     }
-  };
+    updateSyncStatus(); // update once immediately
+    setIsUpdatingSyncStatus(true);
+    intervalRef.current = setInterval(updateSyncStatus, 5000); // 5-second interval
+  }
 
-  const initializeClient = useCallback(
-    async (script?: any) => {
-      try {
-        if (clientRef.current && !isInitialized) {
-          await clientRef.current.startSync();
-
-          if (script) {
-            await clientRef.current.setScripts(
-              [{ blockNumber: BigInt(17107327), script, scriptType: "lock" }],
-              LightClientSetScriptsCommand.All,
-            );
-          }
-
-          setIsInitialized(true);
-        }
-      } catch (error) {
-        console.error("Failed to initialize client:", error);
-      }
-    },
-    [isInitialized],
-  );
+  useEffect(() => {
+    startUpdateSyncStatus();
+  }, [isClientStart]);
 
   // Ensure client is available before providing context
-  if (!clientRef.current || !clientReady) {
+  if (!clientRef.current || !isClientReady) {
     return <div>Loading light client...</div>; // Show a loading indicator
   }
 
   return (
     <LightClientContext.Provider
       value={{
+        isClientReady,
         client: clientRef.current,
-        isInitialized,
+        isClientStart,
         peers,
         connections,
-        startPeersUpdate,
-        stopPeersUpdate,
-        isUpdatingPeers,
-        initializeClient,
         tipBlockNumber,
         syncedBlockNumber,
+        startUpdateSyncStatus,
+        stopUpdateSyncStatus,
+        isUpdatingSyncStatus,
       }}
     >
       {children}

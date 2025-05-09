@@ -3,7 +3,7 @@ import { NetworkIcon } from "./icons/network";
 import { SyncIcon } from "./icons/sync";
 import { patchLightClientBigintType } from "../utils/stringUtils";
 export const Header = () => {
-  const { connections, tipBlockNumber, syncedBlockNumber, isUpdatingPeers } = useLightClient();
+  const { connections, tipBlockNumber, syncedBlockNumber, isUpdatingSyncStatus: isUpdatingPeers } = useLightClient();
 
   const syncedPercentage =
     syncedBlockNumber && tipBlockNumber ? (Number(syncedBlockNumber) / Number(tipBlockNumber)) * 100 : 0;

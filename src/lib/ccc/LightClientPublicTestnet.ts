@@ -1,6 +1,6 @@
 import { LightClient } from "ckb-light-client-js";
 import { ClientCache, Hex, KnownScript, ScriptInfo, ScriptInfoLike } from "@ckb-ccc/core";
-import { CCCLightClient, NetworkType } from "./LightClient";
+import { CCCLightClient } from "./LightClient";
 import { TESTNET_SCRIPTS } from "@ckb-ccc/core/advancedBarrel";
 
 export class LightClientPublicTestnet extends CCCLightClient {

@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useLightClient } from "../contexts";
+import React from "react";
 import { Header } from "./Header";
 import { Sidebar, TabItem } from "./Sidebar";
 import { AssetsTab } from "./tabs/AssetsTab";
@@ -47,14 +46,6 @@ const tabItems: TabItem[] = [
 ];
 
 export const NostrWallet: React.FC = () => {
-  const { stopPeersUpdate } = useLightClient();
-
-  useEffect(() => {
-    return () => {
-      stopPeersUpdate();
-    };
-  }, []);
-
   return (
     <div className="min-h-screen bg-navy-900 text-white">
       <Header />
