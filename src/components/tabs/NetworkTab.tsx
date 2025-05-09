@@ -38,84 +38,86 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
   const truncatedPercentage = Math.floor(syncedPercentage * 10000) / 10000;
 
   return (
-    <div className="bg-navy-800/80 rounded-2xl p-8 shadow-lg backdrop-blur-sm">
-      <h2 className="text-lg font-medium text-gray-400 mb-4">
+    <>
+      <h2 className="text-lg font-medium text-text-primary mb-4">
         <span className="mr-2">Network Status</span>
         <span className={isInitialized ? "text-green-400" : "text-red-400"}>{isInitialized ? "✔️" : "-"}</span>
       </h2>
       <div className="mb-4 flex justify-start items-center gap-4">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-text-primary">
             <NetworkIcon />
             {patchLightClientBigintType(connections)}
           </div>
-          <div className="group relative flex items-center gap-2 text-sm text-gray-400">
+          <div className="group relative flex items-center gap-2 text-sm text-text-primary">
             <SyncIcon isUpdating={isUpdatingPeers && truncatedPercentage < 100} />
             <span>{truncatedPercentage.toFixed(4)}%</span>
           </div>
         </div>
         <button
-          className=" text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors"
+          className="bg-primary/10 text-primary px-4 py-2 rounded-md hover:bg-primary/20 transition-colors"
           onClick={setupPeersUpdate}
         >
           Update
         </button>
         <button
-          className=" text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors"
+          className="bg-primary/10 text-primary px-4 py-2 rounded-md hover:bg-primary/20 transition-colors"
           onClick={stopPeersUpdateHandler}
         >
           Stop Update
         </button>
       </div>
       <div className="my-4">
-        <div>
-          <span className="text-gray-400">Tip Block Number: </span>
-          <span className="text-blue-300">
+        <div className="mb-2">
+          <span className="text-text-primary">Tip Block Number: </span>
+          <span className="text-primary">
             <a
               href={`https://testnet.explorer.nervos.org/block/${patchLightClientBigintType(tipBlockNumber)}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="hover:text-primary-hover"
             >
               {patchLightClientBigintType(tipBlockNumber)}
             </a>
           </span>
         </div>
         <div>
-          <span className="text-gray-400">Synced Block Number: </span>
-          <span className="text-blue-300">
+          <span className="text-text-primary">Synced Block Number: </span>
+          <span className="text-primary">
             <a
               href={`https://testnet.explorer.nervos.org/block/${patchLightClientBigintType(syncedBlockNumber)}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="hover:text-primary-hover"
             >
               {patchLightClientBigintType(syncedBlockNumber)}
             </a>
           </span>
         </div>
       </div>
-      <hr />
+      <hr className="border-border/20" />
       <div className="my-4">
-        <span className="text-gray-400">Peers: </span>
-        <span className="text-blue-300">{Array.isArray(peers) ? peers.length : 0}</span>
+        <span className="text-text-primary">Peers: </span>
+        <span className="text-primary">{Array.isArray(peers) ? peers.length : 0}</span>
         <div className="mt-2 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-700">
+          <table className="min-w-full divide-y divide-border/20">
             <thead>
-              <tr className="text-left text-sm text-gray-400">
+              <tr className="text-left text-sm font-medium text-text-primary">
                 <th className="px-4 py-2">Node ID</th>
                 <th className="px-4 py-2">Connection Duration</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700">
+            <tbody className="divide-y divide-border/20">
               {Array.isArray(peers) && peers.length > 0 ? (
                 peers.map((peer, idx: number) => (
-                  <tr key={idx} className="text-sm text-gray-300 hover:bg-navy-700/50">
+                  <tr key={idx} className="text-sm text-text-primary hover:bg-white/5">
                     <td className="px-4 py-2 font-mono">{peer.nodeId}</td>
                     <td className="px-4 py-2">{Math.floor(Number(peer.connestedDuration) / 1000 / 60)} min</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={2} className="px-4 py-2 text-center text-gray-400">
+                  <td colSpan={2} className="px-4 py-2 text-center text-text-secondary">
                     No peers
                   </td>
                 </tr>
@@ -124,6 +126,6 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
           </table>
         </div>
       </div>
-    </div>
+    </>
   );
 };

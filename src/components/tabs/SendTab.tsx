@@ -39,31 +39,31 @@ export const SendTab: React.FC = () => {
   };
 
   return (
-    <div className="bg-navy-800/80 rounded-2xl p-8 shadow-lg max-w-xl mx-auto backdrop-blur-sm">
-      <h2 className="text-lg font-medium text-gray-400 mb-6">Send CKB</h2>
+    <div className="max-w-xl mx-auto">
+      <h2 className="text-lg font-medium text-text-primary mb-6">Send CKB</h2>
       <div className="space-y-6">
         <div>
-          <label className="block text-sm text-gray-400 mb-2">Recipient Address</label>
+          <label className="block text-sm text-text-primary mb-2">Recipient Address</label>
           <input
             type="text"
-            className="w-full bg-navy-700/30 rounded-lg px-4 py-3 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
+            className="w-full bg-white/5 rounded-lg px-4 py-3 text-text-primary placeholder:text-text-secondary/50 border border-border/20 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             placeholder="Enter recipient address"
             value={recipientAddress}
             onChange={(e) => setRecipientAddress(e.target.value)}
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-2">Amount</label>
+          <label className="block text-sm text-text-primary mb-2">Amount</label>
           <input
             type="number"
-            className="w-full bg-navy-700/30 rounded-lg px-4 py-3 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
+            className="w-full bg-white/5 rounded-lg px-4 py-3 text-text-primary placeholder:text-text-secondary/50 border border-border/20 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             placeholder="0.00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
         </div>
         <button
-          className="w-full bg-blue-600 py-3 rounded-lg hover:bg-blue-500 font-medium transition-colors"
+          className="w-full bg-primary py-3 rounded-lg hover:bg-primary-hover text-white font-medium transition-colors"
           onClick={handleSend}
         >
           Send
@@ -72,7 +72,7 @@ export const SendTab: React.FC = () => {
           <div className="text-green-400 text-center my-2">
             Successfully sent, view
             <a
-              className="text-blue-400 mx-2"
+              className="text-primary mx-2 hover:text-primary-hover"
               href={`https://explorer.nervos.org/transaction/${txHash}`}
               target="_blank"
               rel="noopener noreferrer"

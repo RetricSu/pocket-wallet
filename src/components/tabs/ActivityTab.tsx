@@ -69,25 +69,26 @@ export const ActivityTab: React.FC = () => {
   }, [signer, client, isInitialized]);
 
   return (
-    <div className="bg-navy-800/80 rounded-2xl p-8 shadow-lg backdrop-blur-sm">
-      <h2 className="text-lg font-medium text-gray-400 mb-4">Transaction History</h2>
+    <>
+      <h2 className="text-lg font-medium text-text-primary mb-4">Transaction History</h2>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-700">
+        <table className="min-w-full divide-y divide-border/20">
           <thead>
-            <tr className="text-left text-sm font-medium text-gray-400">
+            <tr className="text-left text-sm font-medium text-text-primary">
               <th className="px-6 py-3">Transaction Hash</th>
               <th className="px-6 py-3">Balance Change(CKB)</th>
               <th className="px-6 py-3">Date</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-700">
+          <tbody className="divide-y divide-border/20">
             {transactions.map((tx) => (
-              <tr key={tx.txHash} className="hover:bg-navy-700/50 transition-colors">
-                <td className="px-6 py-4 text-sm text-gray-300 font-mono">
+              <tr key={tx.txHash} className="hover:bg-white/5 transition-colors">
+                <td className="px-6 py-4 text-sm text-text-primary font-mono">
                   <a
                     href={`http://testnet.explorer.nervos.org/en/transaction/${tx.txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="text-primary hover:text-primary-hover"
                   >
                     {tx.txHash.slice(0, 8)}...{tx.txHash.slice(-8)}
                   </a>
@@ -97,12 +98,12 @@ export const ActivityTab: React.FC = () => {
                     {formatCKBBalance(tx.balanceChange)}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-300">{new Date(tx.timestamp).toLocaleString()}</td>
+                <td className="px-6 py-4 text-sm text-text-primary">{new Date(tx.timestamp).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+    </>
   );
 };

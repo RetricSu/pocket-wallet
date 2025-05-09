@@ -37,7 +37,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
   }, [client, signer]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4">
+    <>
       {/* Total Balance Section */}
       <div className="mb-10 mt-6 bg-white/5 rounded-xl p-8 border border-border/10 shadow-sm relative overflow-hidden">
         <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
@@ -114,6 +114,6 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
           )} */}
         </div>
       </div>
-    </div>
+    </>
   );
 };
