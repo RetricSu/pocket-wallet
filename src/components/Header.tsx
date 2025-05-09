@@ -45,6 +45,27 @@ export const Header = () => {
               <option>Mainnet</option>
               <option>Testnet</option>
             </select>
+
+            <div>
+              <div className="flex flex-col items-center justify-center gap-2">
+                <a
+                  className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors font-medium"
+                  href="https://github.com/ckb-devrel/ccc"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    aria-hidden
+                    src="/images/github.svg"
+                    alt="github icon"
+                    width={18}
+                    height={18}
+                    className="opacity-80"
+                  />
+                  GitHub
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

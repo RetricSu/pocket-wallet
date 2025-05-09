@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Account } from "./Account";
-import { Footer } from "./Footer";
 import { TabContentWrapper } from "./TabContentWrapper";
 
 export interface TabItem {
@@ -42,7 +41,7 @@ export const Sidebar: React.FC<SidebarProps & { className?: string }> = ({ items
   return (
     <div className="flex">
       <aside
-        className={`w-72 h-[calc(100vh-4rem)] fixed left-0 top-16 bg-white/10 backdrop-blur-md border-r border-border/20 z-30 p-6 flex flex-col justify-start gap-6 shadow-sm ${className || ""}`}
+        className={`w-72 h-[calc(100vh-4rem)] fixed left-0 top-16 bg-white/10 backdrop-blur-md border-r border-border/20 z-30 p-6 flex flex-col justify-start gap-6 shadow-sm ${className || ""} pt-10`}
       >
         <Account />
         <div className="h-px w-full bg-border/30 rounded-full my-2" />
@@ -56,7 +55,6 @@ export const Sidebar: React.FC<SidebarProps & { className?: string }> = ({ items
             />
           ))}
         </div>
-        <Footer />
       </aside>
       <main className="flex-1 ml-72 pt-16">
         <TabContentWrapper>{activeTab?.content}</TabContentWrapper>

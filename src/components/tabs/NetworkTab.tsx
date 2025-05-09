@@ -104,7 +104,7 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
             <thead>
               <tr className="text-left text-sm font-medium text-text-primary">
                 <th className="px-4 py-2">Node ID</th>
-                <th className="px-4 py-2">Connection Duration</th>
+                <th className="px-4 py-2">Duration</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/20">

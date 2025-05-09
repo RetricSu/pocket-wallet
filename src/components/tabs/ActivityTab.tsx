@@ -94,7 +94,7 @@ export const ActivityTab: React.FC = () => {
                   </a>
                 </td>
                 <td className="px-6 py-4 text-sm">
-                  <span className={`${tx.balanceChange >= 0 ? "text-green-400" : "text-red-400"}`}>
+                  <span className={`${tx.balanceChange >= 0 ? "text-green-700" : "text-red-700"}`}>
                     {formatCKBBalance(tx.balanceChange)}
                   </span>
                 </td>
