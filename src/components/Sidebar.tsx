@@ -17,12 +17,16 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ item, isActive, onClick }) => (
   <button
     onClick={onClick}
-    className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-3 ${
-      isActive ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-navy-700"
+    className={`w-full text-left px-4 py-3 rounded-button flex items-center gap-3 transition-all duration-200 ${
+      isActive 
+        ? "bg-primary text-white shadow-lg shadow-primary/20 font-medium" 
+        : "text-text-secondary hover:bg-secondary-hover hover:text-text-primary"
     }`}
   >
-    {item.icon}
-    {item.label}
+    <span className={`${isActive ? 'text-white' : 'text-primary'}`}>
+      {item.icon}
+    </span>
+    <span>{item.label}</span>
   </button>
 );
 
@@ -36,11 +40,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ items, defaultActiveId }) => {
   const activeTab = items.find((item) => item.id === activeTabId);
 
   return (
-    <div className="flex">
-      <aside className="w-72 min-h-[calc(100vh-150px)] bg-navy-900 rounded-2xl p-6 flex flex-col justify-start gap-10 shadow-xl border-l border-r">
+    <div className="flex gap-8">
+      <aside className="w-72 bg-secondary rounded-card p-6 flex flex-col justify-start gap-8 shadow-card border border-border">
         <Account />
-        <hr />
-        <div className="space-y-2">
+        <div className="h-px w-full bg-border/70 rounded-full" />
+        <div className="space-y-3">
           {items.map((item) => (
             <NavItem
               key={item.id}
@@ -51,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ items, defaultActiveId }) => {
           ))}
         </div>
       </aside>
-      <main className="flex-1 p-6">{activeTab?.content}</main>
+      <main className="flex-1 p-2">{activeTab?.content}</main>
     </div>
   );
 };

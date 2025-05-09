@@ -2,6 +2,7 @@ import { useLightClient } from "../contexts";
 import { NetworkIcon } from "./icons/network";
 import { SyncIcon } from "./icons/sync";
 import { patchLightClientBigintType } from "../utils/stringUtils";
+
 export const Header = () => {
   const { connections, tipBlockNumber, syncedBlockNumber, isUpdatingSyncStatus: isUpdatingPeers } = useLightClient();
 
@@ -10,29 +11,31 @@ export const Header = () => {
   const truncatedPercentage = Math.floor(syncedPercentage * 10000) / 10000;
 
   return (
-    <header className="w-full max-w-6xl mx-auto px-4 bg-navy-800 shadow-md">
-      <div className="flex justify-between items-center py-4 gap-8">
-        <h1 className="text-2xl font-bold text-blue-400">Nostr Wallet</h1>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+    <header className="w-full max-w-6xl mx-auto px-6 py-4">
+      <div className="flex justify-between items-center bg-secondary rounded-2xl shadow-card px-8 py-4 border border-border">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          Nostr Wallet
+        </h1>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 text-sm text-text-secondary">
             <NetworkIcon />
-            {patchLightClientBigintType(connections)}
+            <span className="font-medium">{patchLightClientBigintType(connections)}</span>
           </div>
-          <div className="group relative flex items-center gap-2 text-sm text-gray-400">
+          <div className="group relative flex items-center gap-2 text-sm text-text-secondary">
             <SyncIcon isUpdating={isUpdatingPeers && truncatedPercentage < 100} />
-            <span>{truncatedPercentage.toFixed(4)}%</span>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-navy-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap">
-              <div className="text-xs">
-                <div>Tip Block {tipBlockNumber?.toString() || "-"}</div>
+            <span className="font-medium">{truncatedPercentage.toFixed(2)}%</span>
+            <div className="absolute top-full right-0 mt-2 px-4 py-3 bg-secondary rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap border border-border z-10">
+              <div className="text-xs text-text-secondary">
+                <div className="mb-1">Tip Block <span className="font-medium">{tipBlockNumber?.toString() || "-"}</span></div>
                 <div>
                   Synced behind{" "}
-                  {parseInt(tipBlockNumber?.toString() ?? "0") - parseInt(syncedBlockNumber?.toString() ?? "-")} blocks
+                  <span className="font-medium">{parseInt(tipBlockNumber?.toString() ?? "0") - parseInt(syncedBlockNumber?.toString() ?? "0")}</span> blocks
                 </div>
               </div>
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-45 w-2 h-2 bg-navy-700"></div>
+              <div className="absolute top-0 right-8 -translate-y-1/2 rotate-45 w-2 h-2 bg-secondary border-t border-l border-border"></div>
             </div>
           </div>
-          <select className="bg-black text-blue-400 px-5 py-2 rounded-lg focus:outline-none hover:bg-navy-600 shadow-none">
+          <select className="bg-secondary text-primary px-5 py-2.5 rounded-button focus:outline-none focus:ring-2 focus:ring-primary/20 hover:bg-secondary-hover border border-border font-medium transition-colors cursor-pointer">
             <option>Mainnet</option>
             <option>Testnet</option>
           </select>

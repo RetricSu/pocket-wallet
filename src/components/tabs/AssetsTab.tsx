@@ -37,38 +37,63 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
   }, [client, signer]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Total Balance Card */}
-      <div className="bg-navy-800/80 rounded-2xl p-8 flex items-center justify-between shadow-lg backdrop-blur-sm">
-        <div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-blue-300">{formatBalance(balance)}</span>
-            <span className="text-gray-400">CKB</span>
+      <div className="bg-secondary rounded-card p-8 shadow-card border border-border overflow-hidden relative">
+        <div className="absolute -right-16 -top-16 w-48 h-48 bg-primary/5 rounded-full blur-2xl"></div>
+        <div className="relative z-10">
+          <p className="text-text-secondary font-medium mb-3">Total Balance</p>
+          <div className="flex items-baseline gap-3">
+            <span className="text-5xl font-bold text-text-primary">{formatBalance(balance)}</span>
+            <span className="text-lg text-text-secondary font-medium">CKB</span>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button className="px-5 py-2.5 bg-primary text-white rounded-button hover:bg-primary-hover transition-colors font-medium flex items-center gap-2">
+              <span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </span>
+              Receive
+            </button>
+            <button className="px-5 py-2.5 bg-secondary-hover text-text-primary rounded-button hover:bg-border/50 transition-colors font-medium border border-border flex items-center gap-2">
+              <span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              Send
+            </button>
           </div>
         </div>
       </div>
 
       {/* Token List */}
-      <div className="bg-navy-800/80 rounded-2xl p-8 shadow-lg backdrop-blur-sm">
+      <div className="bg-secondary rounded-card p-8 shadow-card border border-border">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-medium text-gray-400">Tokens</h2>
-          <button className="text-blue-400 hover:text-blue-300 text-sm">Issue Token</button>
+          <h2 className="text-lg font-semibold text-text-primary">Tokens</h2>
+          <button className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            Issue Token
+          </button>
         </div>
         <div className="space-y-4">
           {/* CKB Token */}
-          <div className="flex items-center justify-between p-4 bg-navy-700/30 rounded-lg hover:bg-navy-700/50 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+          <div className="flex items-center justify-between p-5 bg-secondary-hover rounded-xl hover:shadow-sm transition-all duration-200 border border-border/50 cursor-pointer">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
                 <span className="text-white font-bold">CKB</span>
               </div>
               <div>
-                <p className="font-medium text-white">CKB</p>
-                <p className="text-sm text-gray-400">Nervos CKB</p>
+                <p className="font-semibold text-text-primary">CKB</p>
+                <p className="text-sm text-text-secondary">Nervos CKB</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="font-medium text-white">{formatBalance(balance)}</p>
-              <p className="text-sm text-gray-400">≈ $0.00</p>
+              <p className="font-semibold text-text-primary text-lg">{formatBalance(balance)}</p>
+              <p className="text-sm text-text-secondary">≈ $0.00</p>
             </div>
           </div>
         </div>
