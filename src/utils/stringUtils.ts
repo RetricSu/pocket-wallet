@@ -1,3 +1,5 @@
+import { ccc } from "@ckb-ccc/core";
+
 export function truncateString(str: string, frontChars: number, endChars: number): string {
   if (str.length <= frontChars + endChars) {
     return str;
@@ -13,13 +15,12 @@ export function truncateNodeId(nodeId: string, frontChars: number = 6, endChars:
   return truncateString(nodeId, frontChars, endChars);
 }
 
-export function formatBalance(balanceStr: string): string {
-  const number = parseFloat(balanceStr);
-  if (isNaN(number)) {
-    return "0.00";
-  }
-  return number.toFixed(2);
-}
+// Helper function to format large numbers
+export const formatCKBBalance = (balance: string | bigint | null): string => {
+  if (balance === null) return "0";
+  const balanceStr = ccc.fixedPointToString(balance, 8);
+  return new Intl.NumberFormat().format(Number(balanceStr));
+};
 
 export function patchLightClientBigintType(value: bigint | undefined | null): string {
   if (value == null) {

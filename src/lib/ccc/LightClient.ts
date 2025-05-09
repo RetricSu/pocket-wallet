@@ -113,6 +113,8 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
     throw new Error("Not implemented");
   }
 
+  // the original light client method
+  // todo: should expose the client so no need to re-implement and should integrate into the ccc client method to make the usage consistent
   async startSync() {
     return await this.client.start({ type: this.networkType, config: this.lightClientConfig }, this.syncingKey, "info");
   }
@@ -131,5 +133,22 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
 
   async localNodeInfo() {
     return await this.client.localNodeInfo();
+  }
+
+  async getTransactions(
+    searchKey: ClientIndexerSearchKeyTransactionLike,
+    order?: "asc" | "desc",
+    limit?: NumLike,
+    afterCursor?: Hex,
+  ) {
+    return await this.client.getTransactions(searchKey, order, limit, afterCursor);
+  }
+
+  async fetchTransaction(txHash: HexLike) {
+    return await this.client.fetchTransaction(txHash);
+  }
+
+  async getHeader(hash: HexLike) {
+    return await this.client.getHeader(hash);
   }
 }
