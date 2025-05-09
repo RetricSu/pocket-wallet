@@ -37,29 +37,37 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
   }, [client, signer]);
 
   return (
-    <div className="space-y-8">
-      {/* Total Balance Card */}
-      <div className="bg-secondary rounded-card p-8 shadow-card border border-border overflow-hidden relative">
-        <div className="absolute -right-16 -top-16 w-48 h-48 bg-primary/5 rounded-full blur-2xl"></div>
+    <div className="max-w-4xl mx-auto px-4">
+      {/* Total Balance Section */}
+      <div className="mb-10 mt-6 bg-white/5 rounded-xl p-8 border border-border/10 shadow-sm relative overflow-hidden">
+        <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
         <div className="relative z-10">
-          <p className="text-text-secondary font-medium mb-3">Total Balance</p>
-          <div className="flex items-baseline gap-3">
+          <h2 className="text-sm uppercase tracking-wider text-text-secondary/70 font-medium mb-2">Total Balance</h2>
+          <div className="flex items-baseline gap-3 mb-1">
             <span className="text-5xl font-bold text-text-primary">{formatBalance(balance)}</span>
             <span className="text-lg text-text-secondary font-medium">CKB</span>
           </div>
-          <div className="mt-6 flex gap-3">
-            <button className="px-5 py-2.5 bg-primary text-white rounded-button hover:bg-primary-hover transition-colors font-medium flex items-center gap-2">
+          <p className="text-text-secondary text-sm mb-6">≈ $0.00 USD</p>
+
+          <div className="flex gap-3">
+            <button className="px-5 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium flex items-center gap-2">
               <span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </span>
               Receive
             </button>
-            <button className="px-5 py-2.5 bg-secondary-hover text-text-primary rounded-button hover:bg-border/50 transition-colors font-medium border border-border flex items-center gap-2">
+            <button className="px-5 py-3 bg-transparent text-text-primary rounded-lg hover:bg-secondary/50 transition-colors font-medium border border-border/40 flex items-center gap-2">
               <span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path
+                    d="M5 12h14M12 5l7 7-7 7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </span>
               Send
@@ -69,21 +77,22 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
       </div>
 
       {/* Token List */}
-      <div className="bg-secondary rounded-card p-8 shadow-card border border-border">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-text-primary">Tokens</h2>
-          <button className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1">
+      <div className="mb-10">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-text-primary">Your Assets</h2>
+          <button className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
             Issue Token
           </button>
         </div>
-        <div className="space-y-4">
+
+        <div className="space-y-3">
           {/* CKB Token */}
-          <div className="flex items-center justify-between p-5 bg-secondary-hover rounded-xl hover:shadow-sm transition-all duration-200 border border-border/50 cursor-pointer">
+          <div className="flex items-center justify-between p-5 bg-white/5 rounded-xl border border-border/10 hover:border-border/30 transition-all duration-200 cursor-pointer">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/10">
                 <span className="text-white font-bold">CKB</span>
               </div>
               <div>
@@ -96,6 +105,13 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
               <p className="text-sm text-text-secondary">≈ $0.00</p>
             </div>
           </div>
+
+          {/* Empty state - uncomment if needed */}
+          {/* {(!balance || balance === 0n) && (
+            <div className="text-center py-10 text-text-secondary">
+              <p>No tokens found in your wallet</p>
+            </div>
+          )} */}
         </div>
       </div>
     </div>

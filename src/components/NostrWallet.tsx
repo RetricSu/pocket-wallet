@@ -47,9 +47,9 @@ const tabItems: TabItem[] = [
 
 export const NostrWallet: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="w-full max-w-6xl mx-auto py-8 px-6">
+      <div className="flex-1 w-full max-w-6xl mx-auto py-6 px-6">
         <Sidebar items={tabItems} defaultActiveId="assets" />
       </div>
     </div>
