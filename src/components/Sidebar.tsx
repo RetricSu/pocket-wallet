@@ -1,5 +1,10 @@
 import React from "react";
 import { Account } from "./Account";
+import { AssetsIcon } from "./icons/assets";
+import { ActivityIcon } from "./icons/activity";
+import { SendIcon } from "./icons/send";
+import { ReceiveIcon } from "./icons/receive";
+import { NetworkSidebarIcon } from "./icons/network-sidebar";
 
 interface SidebarProps {
   activeTab: "assets" | "activity" | "send" | "receive" | "network";
@@ -18,14 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
             activeTab === "assets" ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-navy-700"
           }`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-            <path
-              fillRule="evenodd"
-              d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <AssetsIcon />
           Assets
         </button>
         <button
@@ -34,10 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
             activeTab === "activity" ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-navy-700"
           }`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
-            <circle cx="10" cy="10" r="3" fill="currentColor" />
-          </svg>
+          <ActivityIcon />
           Activity
         </button>
         <button
@@ -46,15 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
             activeTab === "send" ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-navy-700"
           }`}
         >
-          <span className="inline-block rotate-[-45deg]">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </span>
+          <SendIcon />
           Send
         </button>
         <button
@@ -63,15 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
             activeTab === "receive" ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-navy-700"
           }`}
         >
-          <span className="inline-block rotate-90">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </span>
+          <ReceiveIcon />
           Receive
         </button>
         <button
@@ -80,20 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
             activeTab === "network" ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-navy-700"
           }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17 17v-1a4 4 0 00-3-3.87M7 7V6a4 4 0 013-3.87m0 0A4 4 0 0117 6v1m-7 10a4 4 0 01-4-4V7a4 4 0 014-4h6a4 4 0 014 4v6a4 4 0 01-4 4H7z"
-            />
-          </svg>
+          <NetworkSidebarIcon />
           Network
         </button>
       </div>
