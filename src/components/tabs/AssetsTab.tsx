@@ -55,7 +55,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
       <div className="bg-navy-800/80 rounded-2xl p-8 shadow-lg backdrop-blur-sm">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-medium text-gray-400">Tokens</h2>
-          <button className="text-blue-400 hover:text-blue-300 text-sm">Add Token</button>
+          <button className="text-blue-400 hover:text-blue-300 text-sm">Issue Token</button>
         </div>
         <div className="space-y-4">
           {/* CKB Token */}

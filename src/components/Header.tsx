@@ -1,11 +1,12 @@
 import { useLightClient } from "../contexts";
-
+import { NetworkIcon } from "./icons/network";
+import { SyncIcon } from "./icons/sync";
+import { patchLightClientBigintType } from "../utils/stringUtils";
 export const Header = () => {
   const { connections, tipBlockNumber, syncedBlockNumber, isUpdatingPeers } = useLightClient();
 
   const syncedPercentage =
     syncedBlockNumber && tipBlockNumber ? (Number(syncedBlockNumber) / Number(tipBlockNumber)) * 100 : 0;
-
   const truncatedPercentage = Math.floor(syncedPercentage * 10000) / 10000;
 
   return (
@@ -14,41 +15,11 @@ export const Header = () => {
         <h1 className="text-2xl font-bold text-blue-400">Nostr Wallet</h1>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-sm text-gray-400">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 animate-pulse"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-            {connections
-              ? typeof connections === "string" && (connections as string).startsWith("0x")
-                ? parseInt(connections, 16)
-                : connections.toString()
-              : 0}
+            <NetworkIcon />
+            {patchLightClientBigintType(connections)}
           </div>
           <div className="group relative flex items-center gap-2 text-sm text-gray-400">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-5 w-5 ${isUpdatingPeers && (truncatedPercentage < 100) ? "animate-spin" : ""}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
+            <SyncIcon isUpdating={isUpdatingPeers && truncatedPercentage < 100} />
             <span>{truncatedPercentage.toFixed(4)}%</span>
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-navy-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap">
               <div className="text-xs">

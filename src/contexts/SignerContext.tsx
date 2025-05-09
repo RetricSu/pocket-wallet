@@ -5,6 +5,7 @@ import { useLightClient } from "./LightClientContext";
 // Signer Context
 export interface NostrSignerContextType {
   signer: ccc.SignerNostrPrivateKey;
+  recommendedAddress: string | null;
   nostrAccount: {
     publicKey: string;
     privateKey: string;
@@ -23,7 +24,7 @@ export const NostrSignerProvider: React.FC<{
     privateKey: "fda2c1f734627f6c4c4220858f8630dbdf778a4bfaee4c657cb4a91ef5c56333",
   });
   const [signerReady, setSignerReady] = useState(false);
-
+  const [recommendedAddress, setRecommendedAddress] = useState<string | null>(null);
   const signerRef = useRef<ccc.SignerNostrPrivateKey | null>(null);
 
   // 初始化 signer
@@ -45,6 +46,12 @@ export const NostrSignerProvider: React.FC<{
     }
   }, [nostrAccount, lightClient]);
 
+  useEffect(() => {
+    if (signerRef.current) {
+      signerRef.current.getRecommendedAddress().then(setRecommendedAddress);
+    }
+  }, [signerRef.current]);
+
   // Ensure signer is available before providing context
   if (!signerRef.current || !signerReady) {
     return <div>Loading Nostr signer...</div>; // Show a loading indicator
@@ -54,6 +61,7 @@ export const NostrSignerProvider: React.FC<{
     <NostrSignerContext.Provider
       value={{
         signer: signerRef.current,
+        recommendedAddress,
         nostrAccount,
         setNostrAccount,
       }}

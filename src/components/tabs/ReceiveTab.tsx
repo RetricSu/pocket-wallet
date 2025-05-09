@@ -1,10 +1,11 @@
 import React from "react";
+import { useNostrSigner } from "../../contexts";
 
-interface ReceiveTabProps {
-  recommendedAddress: string | null;
-}
+interface ReceiveTabProps {}
 
-export const ReceiveTab: React.FC<ReceiveTabProps> = ({ recommendedAddress }) => {
+export const ReceiveTab: React.FC<ReceiveTabProps> = ({}) => {
+  const { recommendedAddress } = useNostrSigner();
+
   return (
     <div className="bg-navy-800/80 rounded-2xl p-8 shadow-lg max-w-xl mx-auto backdrop-blur-sm">
       <h2 className="text-lg font-medium text-gray-400 mb-6">Receive CKB</h2>

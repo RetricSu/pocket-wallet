@@ -1,22 +1,16 @@
 import React from "react";
+import { Account } from "./Account";
 
 interface SidebarProps {
   activeTab: "assets" | "activity" | "send" | "receive" | "network";
   setActiveTab: (tab: "assets" | "activity" | "send" | "receive" | "network") => void;
-  nostrAccount: { publicKey: string };
-  recommendedAddress: string | null;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, nostrAccount, recommendedAddress }) => {
-  // Helper function to truncate long strings
-  const truncateString = (str: string, first = 8, last = 8): string => {
-    if (!str) return "";
-    if (str.length <= first + last) return str;
-    return `${str.slice(0, first)}...${str.slice(-last)}`;
-  };
-
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   return (
-    <aside className="w-72 min-h-[calc(100vh-150px)] bg-navy-900 rounded-2xl p-6 flex flex-col justify-between shadow-xl border-l border-r">
+    <aside className="w-72 min-h-[calc(100vh-150px)] bg-navy-900 rounded-2xl p-6 flex flex-col justify-start gap-10 shadow-xl border-l border-r">
+      <Account />
+      <hr />
       <div className="space-y-2">
         <button
           onClick={() => setActiveTab("assets")}
@@ -102,20 +96,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, nostr
           </svg>
           Network
         </button>
-      </div>
-      {/* Account Info */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-3">Account</h3>
-        <div className="space-y-3">
-          <div>
-            <p className="text-xs text-gray-500">Public Key</p>
-            <p className="text-sm text-blue-300 break-all">{truncateString(nostrAccount.publicKey, 8, 8)}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500">Address</p>
-            <p className="text-sm text-blue-300 break-all">{truncateString(recommendedAddress || "", 8, 8)}</p>
-          </div>
-        </div>
       </div>
     </aside>
   );
