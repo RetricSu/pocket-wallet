@@ -6,7 +6,7 @@ import { Footer } from "./components/Footer";
 
 function App() {
   return (
-    <div className="min-h-screen font-[family-name:var(--font-geist-sans)] bg-navy-900">
+    <div className="font-[family-name:var(--font-geist-sans)] bg-navy-900">
       <LightClientProvider>
         <NostrSignerProvider>
           <NostrWallet />

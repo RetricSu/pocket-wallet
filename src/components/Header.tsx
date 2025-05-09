@@ -1,12 +1,7 @@
 import { useLightClient } from "../contexts";
 
 export const Header = () => {
-  const {
-    connections,
-    tipBlockNumber,
-    syncedBlockNumber,
-    isUpdatingPeers,
-  } = useLightClient();
+  const { connections, tipBlockNumber, syncedBlockNumber, isUpdatingPeers } = useLightClient();
 
   const syncedPercentage =
     syncedBlockNumber && tipBlockNumber ? (Number(syncedBlockNumber) / Number(tipBlockNumber)) * 100 : 0;
