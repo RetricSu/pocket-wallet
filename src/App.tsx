@@ -10,7 +10,6 @@ function App() {
       <LightClientProvider>
         <NostrSignerProvider>
           <NostrWallet />
-          <Footer />
         </NostrSignerProvider>
       </LightClientProvider>
     </div>

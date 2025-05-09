@@ -11,7 +11,7 @@ export const Header = () => {
   const truncatedPercentage = Math.floor(syncedPercentage * 10000) / 10000;
 
   return (
-    <header className="w-full bg-background/80 backdrop-blur-sm sticky top-0 z-20 border-b border-border/30">
+    <header className="w-full h-16 bg-background/80 backdrop-blur-sm fixed top-0 left-0 z-40 border-b border-border/30">
       <div className="max-w-6xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">

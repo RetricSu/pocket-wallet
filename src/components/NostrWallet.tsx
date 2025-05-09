@@ -49,9 +49,7 @@ export const NostrWallet: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="flex-1 w-full max-w-6xl mx-auto py-6 px-6">
-        <Sidebar items={tabItems} defaultActiveId="assets" />
-      </div>
+      <Sidebar items={tabItems} defaultActiveId="assets" />
     </div>
   );
 };
