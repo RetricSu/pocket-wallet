@@ -50,11 +50,13 @@ export const ActivityTab: React.FC = () => {
         const currTxBlockDetail: ClientBlockHeader = (await client.getHeader(
           (await client.getTransaction(currTx.hash()))!.blockHash!,
         ))!;
-        resultTx.push({
-          balanceChange: outCapSum - inputCapSum,
-          timestamp: Number(currTxBlockDetail.timestamp),
-          txHash: currTx.hash(),
-        });
+        if (!resultTx.find((tx) => tx.txHash === currTx.hash())) {
+          resultTx.push({
+            balanceChange: outCapSum - inputCapSum,
+            timestamp: Number(currTxBlockDetail.timestamp),
+            txHash: currTx.hash(),
+          });
+        }
       })();
     }
     return resultTx;
