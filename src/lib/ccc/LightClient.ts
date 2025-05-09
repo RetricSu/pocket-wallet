@@ -74,8 +74,7 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
     return await this.client.getHeader(blockHash);
   }
   async getCellsCapacity(key: ClientIndexerSearchKeyLike): Promise<Num> {
-    const cells = await this.client.getCellsCapacity(key);
-    return cells;
+    return await this.client.getCellsCapacity(key);
   }
   async estimateCycles(transaction: TransactionLike): Promise<Num> {
     //todo: update light-client-js's ccc deps version to make this compatible
@@ -96,7 +95,6 @@ export abstract class CCCLightClient extends CCCLightClientProvider {
     withData?: boolean | null,
     includeTxPool?: boolean | null,
   ): Promise<Cell | undefined> {
-    console.log("getCellLiveNoCache not working: ", outPointLike, withData, includeTxPool);
     throw new Error("Not implemented");
   }
   async findCellsPagedNoCache(

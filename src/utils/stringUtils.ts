@@ -16,7 +16,7 @@ export function truncateNodeId(nodeId: string, frontChars: number = 6, endChars:
 }
 
 // Helper function to format large numbers
-export const formatCKBBalance = (balance: string | bigint | null): string => {
+export const formatCKBBalance = (balance: number | string | bigint | null): string => {
   if (balance === null) return "0";
   const balanceStr = ccc.fixedPointToString(balance, 8);
   return new Intl.NumberFormat().format(Number(balanceStr));

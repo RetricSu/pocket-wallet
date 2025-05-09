@@ -96,7 +96,9 @@ export const ActivityTab: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 text-sm">
                   <span className={`${tx.balanceChange >= 0 ? "text-green-400" : "text-red-400"}`}>
-                    {formatCKBBalance(tx.balanceChange)}
+                    {tx.balanceChange >= 0
+                      ? formatCKBBalance(tx.balanceChange)
+                      : `-${formatCKBBalance(Math.abs(+tx.balanceChange.toString()))}`}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-300">{new Date(tx.timestamp).toLocaleString()}</td>
