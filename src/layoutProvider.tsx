@@ -11,16 +11,17 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
     <ccc.Provider
       connectorProps={{
         style: {
-          "--background": "#232323",
-          "--divider": "rgba(255, 255, 255, 0.1)",
-          "--btn-primary": "#2D2F2F",
-          "--btn-primary-hover": "#515151",
-          "--btn-secondary": "#2D2F2F",
-          "--btn-secondary-hover": "#515151",
-          "--icon-primary": "#FFFFFF",
-          "--icon-secondary": "rgba(255, 255, 255, 0.6)",
-          color: "#ffffff",
-          "--tip-color": "#666",
+          "--background": "#f7fafd",
+          "--divider": "rgba(0, 0, 0, 0.05)",
+          "--btn-primary": "#2563eb",
+          "--btn-primary-hover": "#1d4ed8",
+          "--btn-secondary": "#ffffff",
+          "--btn-secondary-hover": "#f9fafb",
+          "--icon-primary": "#111827",
+          "--icon-secondary": "rgba(0, 0, 0, 0.6)",
+          color: "#111827",
+          "--tip-color": "#6b7280",
+          borderRadius: "0.75rem",
         } as CSSProperties,
       }}
       defaultClient={defaultClient}

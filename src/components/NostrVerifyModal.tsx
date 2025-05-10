@@ -1,0 +1,150 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { bytesTo, NostrEvent, Transaction, WitnessArgs } from "@ckb-ccc/core";
+
+interface NostrVerifyModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  transaction: Transaction;
+}
+
+export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onClose, transaction }) => {
+  const parseWitnessToEvent = (witness: string) => {
+    const args = WitnessArgs.fromBytes(witness);
+    const eventBytes = args.lock!;
+    const event = JSON.parse(bytesTo(eventBytes, "utf8")) as Required<NostrEvent>;
+    return event;
+  };
+
+  const event = useMemo(() => {
+    return parseWitnessToEvent(transaction.witnesses[0]) as Required<NostrEvent>;
+  }, [transaction]);
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-medium text-text-primary">Transaction Details</h2>
+          <button onClick={onClose} className="text-text-secondary hover:text-text-primary">
+            ✕
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-medium text-text-secondary mb-2">Transaction Hash</h3>
+            <p className="text-sm text-text-primary font-mono break-all px-2">{transaction.hash()}</p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-text-secondary mb-2">Inputs</h3>
+            <div className="space-y-2">
+              {transaction.inputs.map((input, index) => (
+                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 p-2 rounded">
+                  <div>
+                    {input.previousOutput.txHash}#{input.previousOutput.index.toString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-text-secondary mb-2">Outputs</h3>
+            <div className="space-y-2">
+              {transaction.outputs.map((output, index) => (
+                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 p-2 rounded">
+                  <div>Capacity: {output.capacity.toString()}</div>
+                  <div>Lock: {output.lock?.codeHash}</div>
+                  <div>Args: {output.lock?.args}</div>
+                  <div>Hash Type: {output.lock?.hashType}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-text-secondary mb-2">Witnesses</h3>
+            <div className="space-y-2">
+              <pre className="text-sm text-gray-100 font-mono bg-gray-900 p-4 rounded overflow-x-auto whitespace-pre">
+                <code>
+                  <span className="text-gray-400">&#123;</span>
+                  {"\n"}
+                  <span>
+                    {" "}
+                    <span className="text-blue-300">"id"</span>: <span className="text-green-300">"{event.id}"</span>,
+                  </span>
+                  {"\n"}
+                  <span>
+                    {" "}
+                    <span className="text-blue-300">"pubkey"</span>:{" "}
+                    <span className="text-green-300">"{event.pubkey}"</span>,
+                  </span>
+                  {"\n"}
+                  <span>
+                    {" "}
+                    <span className="text-blue-300">"sig"</span>: <span className="text-green-300">"{event.sig}"</span>,
+                  </span>
+                  {"\n"}
+                  <span>
+                    {" "}
+                    <span className="text-blue-300">"created_at"</span>:{" "}
+                    <span className="text-yellow-300">{event.created_at}</span>,
+                  </span>
+                  {"\n"}
+                  <span>
+                    {" "}
+                    <span className="text-blue-300">"kind"</span>: <span className="text-yellow-300">{event.kind}</span>
+                    ,
+                  </span>
+                  {"\n"}
+                  <span>
+                    {" "}
+                    <span className="text-blue-300">"content"</span>:{" "}
+                    <span className="text-green-300">{JSON.stringify(event.content)}</span>,
+                  </span>
+                  {"\n"}
+                  <span>
+                    {" "}
+                    <span className="text-blue-300">"tags"</span>: [
+                  </span>
+                  {"\n"}
+                  {event.tags.map((tag, i) => (
+                    <span key={i}>
+                      {" "}
+                      [
+                      {tag.map((item, j) => (
+                        <span key={j}>
+                          <span className="text-green-300">{JSON.stringify(item)}</span>
+                          {j < tag.length - 1 ? <span className="text-gray-400">, </span> : null}
+                        </span>
+                      ))}
+                      ]{i < event.tags.length - 1 ? <span className="text-gray-400">,</span> : null}
+                      {"\n"}
+                    </span>
+                  ))}
+                  <span> ]</span>
+                  {"\n"}
+                  <span className="text-gray-400">&#125;</span>
+                </code>
+              </pre>
+            </div>
+            <div className="flex justify-start space-x-4 mt-6">
+              <button className="px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:bg-primary/90 transition-colors">
+                Verify Nostr Event
+              </button>
+              <button className="px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:bg-primary/90 transition-colors">
+                Verify Transaction in CKB-VM
+              </button>
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
