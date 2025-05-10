@@ -2,7 +2,6 @@ import React from "react";
 import { NostrWallet } from "./components/NostrWallet";
 import { LightClientProvider } from "./contexts";
 import { NostrSignerProvider } from "./contexts/SignerContext";
-import { Footer } from "./components/Footer";
 
 function App() {
   return (

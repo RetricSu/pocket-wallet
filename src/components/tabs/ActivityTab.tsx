@@ -1,13 +1,16 @@
-import { ccc, CellOutputLike, ClientBlockHeader, Hex, Transaction } from "@ckb-ccc/core";
+import { CellOutputLike, ClientBlockHeader, Hex, Transaction } from "@ckb-ccc/core";
 import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
 import React, { useEffect, useState } from "react";
 import { useLightClient, useNostrSigner } from "../../contexts";
 import { formatCKBBalance } from "../../utils/stringUtils";
+import { NostrVerifyModal } from "../NostrVerifyModal";
 
 export interface DisplayTransaction {
   txHash: Hex;
   balanceChange: bigint;
   timestamp: number;
+  isNostrUnlock: boolean;
+  transaction: Transaction;
 }
 
 export const ActivityTab: React.FC = () => {
@@ -15,6 +18,8 @@ export const ActivityTab: React.FC = () => {
   const { client, isClientStart: isInitialized } = useLightClient();
 
   const [transactions, setTransactions] = useState<DisplayTransaction[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
 
   const updateTransactions = async () => {
     const resultTx: DisplayTransaction[] = [];
@@ -39,11 +44,19 @@ export const ActivityTab: React.FC = () => {
         .reduce((a, b) => a + b, BigInt(0));
       let inputCapSum = BigInt(0);
       await (async () => {
+        let isNostrUnlock = false;
         for (const input of currTx.inputs) {
           const inputTx = await client.lightClient.fetchTransaction(input.previousOutput.txHash);
           if (inputTx.status !== "fetched") return;
           const previousOutput = inputTx.data.transaction.outputs[Number(input.previousOutput.index)];
           if (validateCell(previousOutput)) inputCapSum += previousOutput.capacity;
+          if (
+            previousOutput.lock?.args === script.args &&
+            previousOutput.lock?.codeHash === script.codeHash &&
+            previousOutput.lock?.hashType === script.hashType
+          ) {
+            isNostrUnlock = true;
+          }
         }
         const currTxBlockDetail: ClientBlockHeader = (await client.lightClient.getHeader(
           (await client.getTransaction(currTx.hash()))!.blockHash!,
@@ -53,6 +66,8 @@ export const ActivityTab: React.FC = () => {
             balanceChange: outCapSum - inputCapSum,
             timestamp: Number(currTxBlockDetail.timestamp),
             txHash: currTx.hash(),
+            transaction: currTx,
+            isNostrUnlock,
           });
         }
       })();
@@ -77,7 +92,8 @@ export const ActivityTab: React.FC = () => {
             <tr className="text-left text-sm font-medium text-text-primary">
               <th className="px-6 py-3">Transaction Hash</th>
               <th className="px-6 py-3">Balance Change(CKB)</th>
-              <th className="px-6 py-3">Date</th>
+              <th className="px-6 py-3">Timestamp</th>
+              <th className="px-6 py-3">Nostr Lock</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/20">
@@ -99,11 +115,35 @@ export const ActivityTab: React.FC = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-text-primary">{new Date(tx.timestamp).toLocaleString()}</td>
+                <td className="px-6 py-4 text-sm">
+                  {tx.isNostrUnlock && (
+                    <button
+                      className="bg-primary hover:bg-primary-hover text-white font-medium py-1 px-3 rounded"
+                      onClick={() => {
+                        setSelectedTx(tx.transaction);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      Verify
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {selectedTx && (
+        <NostrVerifyModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedTx(null);
+          }}
+          transaction={selectedTx}
+        />
+      )}
     </>
   );
 };
