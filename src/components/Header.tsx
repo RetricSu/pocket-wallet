@@ -17,7 +17,7 @@ export const Header = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent flex items-center gap-2">
             <NostrLogo className="w-8 h-8" />
-            Nostr Wallet
+            Pocket Wallet
           </h1>
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2 text-sm text-text-secondary">

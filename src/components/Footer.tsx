@@ -11,7 +11,7 @@ export const Footer = () => {
           <img aria-hidden src="/images/github.svg" alt="github icon" width={18} height={18} className="opacity-80" />
           GitHub
         </a>
-        <span className="text-text-tertiary text-sm">© 2025 Nostr Wallet</span>
+        <span className="text-text-tertiary text-sm">© 2025 Pocket Wallet</span>
       </div>
     </footer>
   );
