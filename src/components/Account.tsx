@@ -3,7 +3,6 @@ import { Nip07 } from "@ckb-ccc/nip07";
 import { useNostrSigner } from "../contexts";
 import { truncateString } from "../utils/stringUtils";
 import { CopyButton } from "./common/CopyButton";
-import { AccountIcon } from "./icons/account";
 import { ProfileImg } from "./ProfileImg";
 import { useEffect, useMemo, useState } from "react";
 import { nip19 } from "nostr-tools";
