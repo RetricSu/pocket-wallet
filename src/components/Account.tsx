@@ -3,7 +3,7 @@ import { truncateString } from "../utils/stringUtils";
 import { CopyButton } from "./common/CopyButton";
 import { AccountIcon } from "./icons/account";
 export const Account = () => {
-  const { nostrAccount, recommendedAddress } = useNostrSigner();
+  const { nostrPublicKey, recommendedAddress } = useNostrSigner();
 
   return (
     <div className="space-y-6">
@@ -22,8 +22,8 @@ export const Account = () => {
           <p className="text-sm text-text-secondary/70 mb-1.5">Nostr Public Key</p>
           <div className="flex items-center gap-2">
             <CopyButton
-              textToCopy={nostrAccount.publicKey}
-              defaultMessage={truncateString(nostrAccount.publicKey, 8, 8)}
+              textToCopy={nostrPublicKey || ""}
+              defaultMessage={truncateString(nostrPublicKey || "", 8, 8)}
               className="text-base text-accent font-medium"
             />
           </div>

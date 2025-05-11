@@ -15,7 +15,7 @@ export interface DisplayTransaction {
 
 export const ActivityTab: React.FC = () => {
   const { signer } = useNostrSigner();
-  const { client, isClientStart: isInitialized } = useLightClient();
+  const { client, isClientStarted: isInitialized } = useLightClient();
 
   const [transactions, setTransactions] = useState<DisplayTransaction[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);

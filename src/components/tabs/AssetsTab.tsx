@@ -5,8 +5,8 @@ import { useLightClient, useNostrSigner } from "../../contexts";
 interface AssetsTabProps {}
 
 export const AssetsTab: React.FC<AssetsTabProps> = () => {
-  const { client } = useLightClient();
-  const { signer } = useNostrSigner();
+  const { client, isClientStarted: isClientStart } = useLightClient();
+  const { recommendedAddressObj } = useNostrSigner();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [balance, setBalance] = useState<bigint | null>(null);
@@ -19,10 +19,12 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
   };
 
   const refreshBalance = async () => {
+    if (isLoading) return;
+    if (!recommendedAddressObj) return;
+
     try {
       setIsLoading(true);
-      const addr = await signer.getRecommendedAddressObj();
-      const balance = await client.getBalanceSingle(addr.script);
+      const balance = await client.getBalanceSingle(recommendedAddressObj.script);
       setBalance(balance);
     } catch (error) {
       console.error("Failed to get balance:", error);
@@ -34,7 +36,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
 
   useEffect(() => {
     refreshBalance();
-  }, [client, signer]);
+  }, [isClientStart, recommendedAddressObj, isLoading]);
 
   return (
     <>
