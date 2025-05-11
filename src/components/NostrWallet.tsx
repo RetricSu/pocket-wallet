@@ -10,7 +10,7 @@ import { AssetsIcon } from "./icons/assets";
 import { ActivityIcon } from "./icons/activity";
 import { SendIcon } from "./icons/send";
 import { ReceiveIcon } from "./icons/receive";
-import { NetworkSidebarIcon } from "./icons/network-sidebar";
+import { NetworkIcon } from "./icons/network";
 import { NavigationProvider } from "../contexts";
 
 const tabItems: TabItem[] = [
@@ -41,7 +41,7 @@ const tabItems: TabItem[] = [
   {
     id: "network",
     label: "Network",
-    icon: <NetworkSidebarIcon />,
+    icon: <NetworkIcon />,
     content: <NetworkTab />,
   },
 ];

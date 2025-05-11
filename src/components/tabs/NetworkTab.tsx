@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLightClient } from "../../contexts";
 import { patchLightClientBigintType } from "../../utils/stringUtils";
-import { NetworkIcon } from "../icons/network";
+import { NodesIcon } from "../icons/nodes";
 import { SyncIcon } from "../icons/sync";
 
 interface NetworkTabProps {}

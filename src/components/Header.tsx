@@ -1,5 +1,5 @@
 import { useLightClient } from "../contexts";
-import { NetworkIcon } from "./icons/network";
+import { NodesIcon } from "./icons/nodes";
 import { SyncIcon } from "./icons/sync";
 import { patchLightClientBigintType } from "../utils/stringUtils";
 
@@ -20,7 +20,7 @@ export const Header = () => {
           </h1>
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2 text-sm text-text-secondary">
-              <NetworkIcon />
+              <NodesIcon />
               <span className="font-medium">{patchLightClientBigintType(connections)}</span>
             </div>
             <div className="group relative flex items-center gap-2 text-sm text-text-secondary">
