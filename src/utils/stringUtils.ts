@@ -22,6 +22,12 @@ export const formatCKBBalance = (balance: number | string | bigint | null): stri
   return new Intl.NumberFormat().format(Number(balanceStr));
 };
 
+export const formatCKBBalanceChange = (balanceChanges: number | string | bigint | null): string => {
+  if (balanceChanges === null) return "0";
+  const balanceStr = ccc.fixedPointToString(balanceChanges, 8).replace(/-/g, "");
+  return balanceStr;
+};
+
 export function patchLightClientBigintType(value: bigint | undefined | null): string {
   if (value == null) {
     return "0";

@@ -2,7 +2,7 @@ import { CellOutputLike, ClientBlockHeader, Hex, Transaction } from "@ckb-ccc/co
 import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
 import React, { useEffect, useState } from "react";
 import { useLightClient, useNostrSigner } from "../../contexts";
-import { formatCKBBalance } from "../../utils/stringUtils";
+import { formatCKBBalanceChange } from "../../utils/stringUtils";
 import { NostrVerifyModal } from "../NostrVerifyModal";
 
 export interface DisplayTransaction {
@@ -111,7 +111,8 @@ export const ActivityTab: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 text-sm">
                   <span className={`${tx.balanceChange >= 0 ? "text-green-700" : "text-red-700"}`}>
-                    {formatCKBBalance(tx.balanceChange)}
+                    {tx.balanceChange >= 0 ? "+" : "-"}
+                    {formatCKBBalanceChange(tx.balanceChange)}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-text-primary">{new Date(tx.timestamp).toLocaleString()}</td>
