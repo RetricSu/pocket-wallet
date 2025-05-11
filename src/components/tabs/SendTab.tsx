@@ -4,6 +4,7 @@ import { useLightClient } from "../../contexts";
 import { useNostrSigner } from "../../contexts";
 import { truncateAddress } from "../../utils/stringUtils";
 import { nostrService, ProfileInfo } from "../../services/nostr";
+import { ProfileImg } from "../ProfileImg";
 
 export const SendTab: React.FC = () => {
   const { signer, isConnected, nostrPublicKey } = useNostrSigner();
@@ -128,7 +129,7 @@ export const SendTab: React.FC = () => {
                 onClick={() => handleSelectContact(follower.ckbAddress)}
               >
                 <div className="flex items-center gap-2">
-                  <img src={follower.picture} className="w-10 h-10 rounded-full" />
+                  <ProfileImg imageUrl={follower.picture} />
                   <h3 className="text-lg font-medium text-text-primary">{follower.name}</h3>
                   {isSelected && (
                     <span className="ml-auto text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">Selected</span>

@@ -4,6 +4,7 @@ import { useNostrSigner } from "../contexts";
 import { truncateString } from "../utils/stringUtils";
 import { CopyButton } from "./common/CopyButton";
 import { AccountIcon } from "./icons/account";
+import { ProfileImg } from "./ProfileImg";
 import { useEffect, useMemo, useState } from "react";
 import { nip19 } from "nostr-tools";
 import { nostrService } from "../services/nostr";
@@ -38,7 +39,7 @@ export const Account = () => {
     <div className="rounded-xl shadow-lg border p-4 border-neutral-200 relative">
       <div className="flex flex-col items-center gap-2 mb-6">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mb-2">
-          {profile?.picture ? <img src={profile.picture} /> : <AccountIcon />}
+          <ProfileImg imageUrl={profile?.picture} />
         </div>
         <h3 className="text-lg font-bold text-text-primary">{profile?.name || "Account"}</h3>
       </div>

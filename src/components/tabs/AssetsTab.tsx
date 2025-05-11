@@ -89,7 +89,10 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
       <div className="mb-10">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-text-primary">Your Assets</h2>
-          <button className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5">
+          <button
+            className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5"
+            onClick={() => alert("Feature coming soon")}
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
