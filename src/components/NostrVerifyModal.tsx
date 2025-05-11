@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { bytesTo, NostrEvent, Transaction, WitnessArgs } from "@ckb-ccc/core";
 import { verifyEvent } from "nostr-tools";
+import ReactDOM from "react-dom";
 
 interface NostrVerifyModalProps {
   isOpen: boolean;
@@ -65,8 +66,12 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
   // If modal is not open, don't render anything
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
+  const modalContent = (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+      onClick={onClose}
+      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
+    >
       <div
         className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -201,4 +206,7 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
       </div>
     </div>
   );
+
+  // Use ReactDOM.createPortal to render the modal directly in the document body
+  return ReactDOM.createPortal(modalContent, document.body);
 };
