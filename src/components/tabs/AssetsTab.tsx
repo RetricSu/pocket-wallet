@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ccc } from "@ckb-ccc/core";
-import { useLightClient, useNostrSigner } from "../../contexts";
+import { useLightClient, useNostrSigner, useNavigation } from "../../contexts";
 
 interface AssetsTabProps {}
 
 export const AssetsTab: React.FC<AssetsTabProps> = () => {
-  const { client } = useLightClient();
-  const { signer } = useNostrSigner();
+  const { client, isClientStarted: isClientStart } = useLightClient();
+  const { recommendedAddressObj } = useNostrSigner();
+  const { setActiveTabId } = useNavigation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [balance, setBalance] = useState<bigint | null>(null);
@@ -19,10 +20,12 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
   };
 
   const refreshBalance = async () => {
+    if (isLoading) return;
+    if (!recommendedAddressObj) return setBalance(null);
+
     try {
       setIsLoading(true);
-      const addr = await signer.getRecommendedAddressObj();
-      const balance = await client.getBalanceSingle(addr.script);
+      const balance = await client.getBalanceSingle(recommendedAddressObj.script);
       setBalance(balance);
     } catch (error) {
       console.error("Failed to get balance:", error);
@@ -34,7 +37,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
 
   useEffect(() => {
     refreshBalance();
-  }, [client, signer]);
+  }, [isClientStart, recommendedAddressObj, isLoading]);
 
   return (
     <>
@@ -50,7 +53,10 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
           <p className="text-text-secondary text-sm mb-6">≈ $0.00 USD</p>
 
           <div className="flex gap-3">
-            <button className="px-5 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium flex items-center gap-2">
+            <button
+              className="px-5 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium flex items-center gap-2"
+              onClick={() => setActiveTabId("receive")}
+            >
               <span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -58,7 +64,10 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
               </span>
               Receive
             </button>
-            <button className="px-5 py-3 bg-transparent text-text-primary rounded-lg hover:bg-secondary/50 transition-colors font-medium border border-border/40 flex items-center gap-2">
+            <button
+              className="px-5 py-3 bg-transparent text-text-primary rounded-lg hover:bg-secondary/50 transition-colors font-medium border border-border/40 flex items-center gap-2"
+              onClick={() => setActiveTabId("send")}
+            >
               <span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -80,7 +89,10 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
       <div className="mb-10">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-text-primary">Your Assets</h2>
-          <button className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5">
+          <button
+            className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5"
+            onClick={() => alert("Feature coming soon")}
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>

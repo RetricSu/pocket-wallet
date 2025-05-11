@@ -14,18 +14,18 @@ export interface DisplayTransaction {
 }
 
 export const ActivityTab: React.FC = () => {
-  const { signer } = useNostrSigner();
-  const { client, isClientStart: isInitialized } = useLightClient();
+  const { isConnected, recommendedAddressObj } = useNostrSigner();
+  const { client, isClientStarted: isInitialized } = useLightClient();
 
   const [transactions, setTransactions] = useState<DisplayTransaction[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
 
   const updateTransactions = async () => {
-    const resultTx: DisplayTransaction[] = [];
+    if (!recommendedAddressObj || !isConnected) return [];
 
-    const address = await signer.getRecommendedAddressObj();
-    const script = address.script;
+    const resultTx: DisplayTransaction[] = [];
+    const script = recommendedAddressObj.script;
     const searchKey = {
       scriptType: "lock",
       script,
@@ -81,7 +81,7 @@ export const ActivityTab: React.FC = () => {
       setTransactions(txs);
     };
     update();
-  }, [signer, client, isInitialized]);
+  }, [recommendedAddressObj, client, isInitialized]);
 
   return (
     <>

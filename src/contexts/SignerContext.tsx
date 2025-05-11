@@ -1,16 +1,19 @@
 import { ccc } from "@ckb-ccc/core";
-import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
+import { Nip07 } from "@ckb-ccc/nip07";
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef, useCallback } from "react";
 import { useLightClient } from "./LightClientContext";
+import { LightClientSetScriptsCommand } from "ckb-light-client-js";
+import { APP_CONFIG } from "../lib/app-config";
 
 // Signer Context
 export interface NostrSignerContextType {
-  signer: ccc.SignerNostrPrivateKey;
+  signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined;
   recommendedAddress: string | null;
-  nostrAccount: {
-    publicKey: string;
-    privateKey: string;
-  };
-  setNostrAccount: (account: { publicKey: string; privateKey: string }) => void;
+  recommendedAddressObj: ccc.Address | null;
+  nostrPublicKey: string | null;
+  isConnected: boolean;
+  setSigner: (signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined) => void;
+  disconnect: () => void;
 }
 
 const NostrSignerContext = createContext<NostrSignerContextType | undefined>(undefined);
@@ -18,52 +21,99 @@ const NostrSignerContext = createContext<NostrSignerContextType | undefined>(und
 export const NostrSignerProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const { client: lightClient } = useLightClient();
-  const [nostrAccount, setNostrAccount] = useState<{ publicKey: string; privateKey: string }>({
-    publicKey: "f879eb8207a69c1429267ab666cf722f18edc8549253e81be5a1ef93513e14dc",
-    privateKey: "fda2c1f734627f6c4c4220858f8630dbdf778a4bfaee4c657cb4a91ef5c56333",
-  });
-  const [signerReady, setSignerReady] = useState(false);
+  const { client, isClientStarted: isClientStart } = useLightClient();
+  const [nostrPublicKey, setNostrPublicKey] = useState<string | null>(null);
+  const [recommendedAddressObj, setRecommendedAddressObj] = useState<ccc.Address | null>(null);
   const [recommendedAddress, setRecommendedAddress] = useState<string | null>(null);
-  const signerRef = useRef<ccc.SignerNostrPrivateKey | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
-  // 初始化 signer
+  const signerRef = useRef<ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined>(null);
+
+  const setSigner = useCallback((signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined) => {
+    signerRef.current = signer;
+    setIsConnected(!!signer);
+  }, []);
+
+  const disconnect = useCallback(() => {
+    signerRef.current = null;
+    setRecommendedAddressObj(null);
+    setRecommendedAddress(null);
+    setNostrPublicKey(null);
+    setIsConnected(false);
+  }, []);
+
+  // initialize signer
   useEffect(() => {
-    signerRef.current = new ccc.SignerNostrPrivateKey(lightClient, nostrAccount.privateKey);
-    setSignerReady(true);
-
     return () => {
       signerRef.current = null;
-      setSignerReady(false);
+      setIsConnected(false);
     };
-  }, [lightClient]);
+  }, []);
 
-  // 当nostrAccount变化时更新signer
-  useEffect(() => {
-    if (lightClient) {
-      signerRef.current = new ccc.SignerNostrPrivateKey(lightClient, nostrAccount.privateKey);
-      setSignerReady(true);
-    }
-  }, [nostrAccount, lightClient]);
-
-  useEffect(() => {
+  const updateSignerInfo = useCallback(async () => {
     if (signerRef.current) {
-      signerRef.current.getRecommendedAddress().then(setRecommendedAddress);
+      const [addressObj, address, publicKey] = await Promise.all([
+        signerRef.current.getRecommendedAddressObj(),
+        signerRef.current.getRecommendedAddress(),
+        signerRef.current.getNostrPublicKey(),
+      ]);
+      setRecommendedAddress(address);
+      setNostrPublicKey(publicKey);
+      setRecommendedAddressObj(addressObj);
     }
   }, [signerRef.current]);
 
-  // Ensure signer is available before providing context
-  if (!signerRef.current || !signerReady) {
-    return <div>Loading Nostr signer...</div>; // Show a loading indicator
-  }
+  useEffect(() => {
+    updateSignerInfo();
+  }, [updateSignerInfo]);
+
+  const tryResetScriptsIfNeeded = useCallback(async () => {
+    if (!recommendedAddressObj) return;
+    if (!isClientStart) return;
+
+    try {
+      const scriptStatus = await client.lightClient.getScripts();
+      console.debug("get script status...", scriptStatus);
+      if (
+        !scriptStatus.find(
+          (s) =>
+            s.script.args === recommendedAddressObj.script.args &&
+            s.script.codeHash === recommendedAddressObj.script.codeHash &&
+            s.script.hashType === recommendedAddressObj.script.hashType &&
+            s.scriptType === "lock",
+        )
+      ) {
+        console.log("tryResetScriptsIfNeeded...", recommendedAddressObj.script);
+        await client.lightClient.setScripts(
+          [
+            {
+              script: recommendedAddressObj.script,
+              scriptType: "lock",
+              blockNumber: APP_CONFIG.defaultStartBlockNumber,
+            },
+          ],
+          LightClientSetScriptsCommand.All,
+        );
+      }
+    } catch (error: unknown) {
+      console.error("Failed to reset scripts", error);
+    }
+  }, [recommendedAddressObj, isClientStart]);
+
+  useEffect(() => {
+    tryResetScriptsIfNeeded();
+  }, [tryResetScriptsIfNeeded]);
 
   return (
     <NostrSignerContext.Provider
       value={{
         signer: signerRef.current,
         recommendedAddress,
-        nostrAccount,
-        setNostrAccount,
+        recommendedAddressObj,
+        nostrPublicKey,
+        isConnected,
+        setSigner,
+        disconnect,
       }}
     >
       {children}

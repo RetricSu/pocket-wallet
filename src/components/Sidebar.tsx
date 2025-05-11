@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Account } from "./Account";
 import { TabContentWrapper } from "./TabContentWrapper";
+import { useNavigation } from "../contexts";
 
 export interface TabItem {
   id: string;
@@ -34,17 +35,17 @@ interface SidebarProps {
   defaultActiveId?: string;
 }
 
-export const Sidebar: React.FC<SidebarProps & { className?: string }> = ({ items, defaultActiveId, className }) => {
-  const [activeTabId, setActiveTabId] = useState(defaultActiveId || items[0]?.id);
+export const Sidebar: React.FC<SidebarProps & { className?: string }> = ({ items, className }) => {
+  const { activeTabId, setActiveTabId } = useNavigation();
   const activeTab = items.find((item) => item.id === activeTabId);
 
   return (
     <div className="flex">
       <aside
-        className={`w-72 h-[calc(100vh-4rem)] fixed left-0 top-16 bg-white/10 backdrop-blur-md border-r border-border/20 z-30 p-6 flex flex-col justify-start gap-6 shadow-sm ${className || ""} pt-10`}
+        className={`w-72 h-[calc(100vh-4rem)] fixed left-0 top-16 bg-white/10 backdrop-blur-md border-r border-border/20 z-30 p-6 flex flex-col justify-start gap-2 shadow-sm ${className || ""} pt-10`}
       >
         <Account />
-        <div className="h-px w-full bg-border/30 rounded-full my-2" />
+        <div className="h-px w-full bg-border/30 rounded-full" />
         <div className="space-y-2">
           {items.map((item) => (
             <NavItem

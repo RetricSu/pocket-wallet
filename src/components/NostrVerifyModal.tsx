@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { bytesTo, NostrEvent, Transaction, WitnessArgs } from "@ckb-ccc/core";
+import { verifyEvent } from "nostr-tools";
 
 interface NostrVerifyModalProps {
   isOpen: boolean;
@@ -8,6 +9,29 @@ interface NostrVerifyModalProps {
 }
 
 export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onClose, transaction }) => {
+  const [verificationStatus, setVerificationStatus] = useState<{ success: boolean; message: string } | null>(null);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Save current scroll position and lock body
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.overflow = "hidden";
+
+      return () => {
+        // Restore scroll position when modal closes
+        document.body.style.position = "";
+        document.body.style.width = "";
+        document.body.style.top = "";
+        document.body.style.overflow = "";
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+
   const parseWitnessToEvent = (witness: string) => {
     const args = WitnessArgs.fromBytes(witness);
     const eventBytes = args.lock!;
@@ -19,9 +43,34 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
     return parseWitnessToEvent(transaction.witnesses[0]) as Required<NostrEvent>;
   }, [transaction]);
 
+  const verifyNostrEvent = useCallback(async () => {
+    try {
+      const result = await verifyEvent(event);
+      console.log(result);
+      setVerificationStatus({
+        success: result,
+        message: result
+          ? `Event signature ${event.sig.slice(0, 6)}...${event.sig.slice(-6)} is valid.`
+          : `Event signature ${event.sig.slice(0, 6)}...${event.sig.slice(-6)} is invalid.`,
+      });
+    } catch (error) {
+      console.error("Error verifying event:", error);
+      setVerificationStatus({
+        success: false,
+        message: `Event Verification Failed! ${error}`,
+      });
+    }
+  }, [event]);
+
+  // If modal is not open, don't render anything
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium text-text-primary">Transaction Details</h2>
           <button onClick={onClose} className="text-text-secondary hover:text-text-primary">
@@ -128,12 +177,17 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
                 </code>
               </pre>
             </div>
+            {verificationStatus && (
+              <div className={`mt-4 rounded ${verificationStatus.success ? "text-green-600" : "text-red-600"}`}>
+                <p className="text-sm font-medium">{verificationStatus.message}</p>
+              </div>
+            )}
             <div className="flex justify-start space-x-4 mt-6">
-              <button className="px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:bg-primary/90 transition-colors">
+              <button
+                className="px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:bg-primary/90 transition-colors"
+                onClick={verifyNostrEvent}
+              >
                 Verify Nostr Event
-              </button>
-              <button className="px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:bg-primary/90 transition-colors">
-                Verify Transaction in CKB-VM
               </button>
               <button
                 onClick={onClose}

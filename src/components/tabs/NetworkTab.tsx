@@ -7,7 +7,7 @@ import { SyncIcon } from "../icons/sync";
 interface NetworkTabProps {}
 
 export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
-  const { peers, tipBlockNumber, syncedBlockNumber } = useLightClient();
+  const { peers, tipBlockNumber, syncedBlockNumber, client } = useLightClient();
 
   return (
     <>
@@ -41,6 +41,17 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
             </a>
           </span>
         </div>
+      </div>
+      <div>
+        <button
+          className="btn btn-primary"
+          onClick={async () => {
+            const scripts = await client.lightClient.getScripts();
+            console.log(scripts);
+          }}
+        >
+          Get Scripts
+        </button>
       </div>
       <hr className="border-border/20" />
       <div className="my-4">
