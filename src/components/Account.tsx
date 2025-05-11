@@ -22,9 +22,8 @@ export const Account = () => {
         </div>
         <h3 className="text-lg font-bold text-text-primary">Account</h3>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div>
-          <p className="text-[11px] text-text-secondary/60 font-semibold mb-1 tracking-wider">Nostr Public Key</p>
           <div className="flex items-center gap-2 bg-neutral-100 rounded-md px-3 py-2">
             <CopyButton
               textToCopy={nostrPublicKey || ""}
@@ -35,7 +34,6 @@ export const Account = () => {
           </div>
         </div>
         <div>
-          <p className="text-[11px] text-text-secondary/60 font-semibold mb-1 tracking-wider">CKB Address</p>
           <div className="flex items-center gap-2 bg-neutral-100 rounded-md px-3 py-2">
             <CopyButton
               textToCopy={recommendedAddress || ""}
