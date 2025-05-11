@@ -41,10 +41,10 @@ export const Sidebar: React.FC<SidebarProps & { className?: string }> = ({ items
   return (
     <div className="flex">
       <aside
-        className={`w-72 h-[calc(100vh-4rem)] fixed left-0 top-16 bg-white/10 backdrop-blur-md border-r border-border/20 z-30 p-6 flex flex-col justify-start gap-6 shadow-sm ${className || ""} pt-10`}
+        className={`w-72 h-[calc(100vh-4rem)] fixed left-0 top-16 bg-white/10 backdrop-blur-md border-r border-border/20 z-30 p-6 flex flex-col justify-start gap-2 shadow-sm ${className || ""} pt-10`}
       >
         <Account />
-        <div className="h-px w-full bg-border/30 rounded-full my-2" />
+        <div className="h-px w-full bg-border/30 rounded-full" />
         <div className="space-y-2">
           {items.map((item) => (
             <NavItem
