@@ -4,42 +4,62 @@ import { useNostrSigner } from "../contexts";
 import { truncateString } from "../utils/stringUtils";
 import { CopyButton } from "./common/CopyButton";
 import { AccountIcon } from "./icons/account";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { nip19 } from "nostr-tools";
+import { nostrService } from "../services/nostr";
 
 export const Account = () => {
   const { isConnected, nostrPublicKey, recommendedAddress, disconnect } = useNostrSigner();
+  const [profile, setProfile] = useState<{ name: string; about: string; picture: string } | null>(null);
+
+  const npub = useMemo(() => {
+    if (nostrPublicKey) {
+      return nip19.npubEncode(nostrPublicKey.slice(2));
+    }
+    return "";
+  }, [nostrPublicKey]);
+
+  const getUserProfile = async () => {
+    if (!nostrPublicKey) return null;
+
+    const profile = await nostrService.getProfile(nostrPublicKey.slice(2));
+    setProfile(profile);
+  };
+
+  useEffect(() => {
+    getUserProfile();
+  }, [nostrPublicKey]);
 
   if (!isConnected) {
     return <SignInAccount />;
   }
 
-  // If signed in, show the existing account UI
   return (
     <div className="rounded-xl shadow-lg border p-4 border-neutral-200 relative">
       <div className="flex flex-col items-center gap-2 mb-6">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mb-2">
-          <AccountIcon />
+          {profile?.picture ? <img src={profile.picture} /> : <AccountIcon />}
         </div>
-        <h3 className="text-lg font-bold text-text-primary">Account</h3>
+        <h3 className="text-lg font-bold text-text-primary">{profile?.name || "Account"}</h3>
       </div>
       <div className="space-y-2">
         <div>
-          <div className="flex items-center gap-2 bg-neutral-100 rounded-md px-3 py-2">
+          <div className="flex items-center justify-center gap-2 bg-neutral-100 rounded-md px-3 py-2">
             <CopyButton
-              textToCopy={nostrPublicKey || ""}
-              defaultMessage={truncateString(nostrPublicKey || "", 8, 8)}
+              textToCopy={npub}
+              defaultMessage={truncateString(npub, 8, 8)}
               successMessage="Copied!"
-              className="font-mono text-xs text-neutral-800 break-all select-all"
+              className="font-mono text-xs text-neutral-800 break-all select-all text-center"
             />
           </div>
         </div>
         <div>
-          <div className="flex items-center gap-2 bg-neutral-100 rounded-md px-3 py-2">
+          <div className="flex items-center justify-center gap-2 bg-neutral-100 rounded-md px-3 py-2">
             <CopyButton
               textToCopy={recommendedAddress || ""}
               defaultMessage={truncateString(recommendedAddress || "", 8, 8)}
               successMessage="Copied!"
-              className="font-mono text-xs text-neutral-800 break-all select-all"
+              className="font-mono text-xs text-neutral-800 break-all select-all text-center"
             />
           </div>
         </div>

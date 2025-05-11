@@ -1,16 +1,19 @@
 import { ccc } from "@ckb-ccc/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLightClient } from "../../contexts";
 import { useNostrSigner } from "../../contexts";
 import { truncateAddress } from "../../utils/stringUtils";
+import { nostrService, ProfileInfo } from "../../services/nostr";
 
 export const SendTab: React.FC = () => {
-  const { signer, isConnected } = useNostrSigner();
+  const { signer, isConnected, nostrPublicKey } = useNostrSigner();
   const { client } = useLightClient();
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [sendStatus, setSendStatus] = useState<"idle" | "success">("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
+  const [followers, setFollowers] = useState<(ProfileInfo & { ckbAddress: string })[]>([]);
+  const [selectedContactAddress, setSelectedContactAddress] = useState<string | null>(null);
 
   const handleSend = async () => {
     if (!signer || !isConnected) {
@@ -43,22 +46,46 @@ export const SendTab: React.FC = () => {
     console.log("Transaction sent:", hash);
   };
 
+  const getFollowers = async () => {
+    if (!nostrPublicKey) {
+      console.error("No nostrPublicKey or not connected");
+      return;
+    }
+    const followers = await nostrService.getFollowerProfiles(nostrPublicKey.slice(2));
+    const ckbAddresses = await Promise.all(followers.map((follower) => getCkbAddress(follower.nostrPublicKey)));
+    setFollowers(followers.map((follower, index) => ({ ...follower, ckbAddress: ckbAddresses[index] })));
+  };
+
+  const getCkbAddress = async (publicKey: string) => {
+    const address = await ccc.Address.fromKnownScript(client, ccc.KnownScript.NostrLock, "0x00" + publicKey);
+    return address.toString();
+  };
+
+  const handleSelectContact = (address: string) => {
+    setRecipientAddress(address);
+    setSelectedContactAddress(address);
+  };
+
+  useEffect(() => {
+    getFollowers();
+  }, [nostrPublicKey]);
+
   return (
     <div className="max-w-xl mx-auto">
       <h2 className="text-lg font-medium text-text-primary mb-6">Send CKB</h2>
       <div className="space-y-6">
         <div>
-          <label className="block text-sm text-text-primary mb-2">Recipient Address</label>
+          <label className="block text-sm text-text-primary mb-2">Recipient CKB Address</label>
           <input
             type="text"
             className="w-full bg-white/5 rounded-lg px-4 py-3 text-text-primary placeholder:text-text-secondary/50 border border-border/20 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
-            placeholder="Enter recipient address"
+            placeholder="Enter recipient CKB address"
             value={recipientAddress}
             onChange={(e) => setRecipientAddress(e.target.value)}
           />
         </div>
         <div>
-          <label className="block text-sm text-text-primary mb-2">Amount</label>
+          <label className="block text-sm text-text-primary mb-2">Amount(CKB)</label>
           <input
             type="number"
             className="w-full bg-white/5 rounded-lg px-4 py-3 text-text-primary placeholder:text-text-secondary/50 border border-border/20 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
@@ -87,6 +114,31 @@ export const SendTab: React.FC = () => {
             on CKB Explorer
           </div>
         )}
+      </div>
+      <div className="mt-6">
+        <h2 className="text-lg font-medium text-text-primary mb-6">Contacts</h2>
+        <div className="border p-2 flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+          {followers.map((follower) => {
+            const isSelected = selectedContactAddress === follower.ckbAddress;
+            return (
+              <div
+                key={follower.name}
+                className={`rounded-lg p-4 border-b cursor-pointer transition-colors
+                  ${isSelected ? "bg-primary/20 border-primary/30" : "hover:bg-white/10 border-b"}`}
+                onClick={() => handleSelectContact(follower.ckbAddress)}
+              >
+                <div className="flex items-center gap-2">
+                  <img src={follower.picture} className="w-10 h-10 rounded-full" />
+                  <h3 className="text-lg font-medium text-text-primary">{follower.name}</h3>
+                  {isSelected && (
+                    <span className="ml-auto text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">Selected</span>
+                  )}
+                </div>
+                <p className="text-sm text-text-secondary">{follower.npub}</p>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
