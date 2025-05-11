@@ -11,6 +11,7 @@ import { ActivityIcon } from "./icons/activity";
 import { SendIcon } from "./icons/send";
 import { ReceiveIcon } from "./icons/receive";
 import { NetworkSidebarIcon } from "./icons/network-sidebar";
+import { NavigationProvider } from "../contexts";
 
 const tabItems: TabItem[] = [
   {
@@ -47,9 +48,11 @@ const tabItems: TabItem[] = [
 
 export const NostrWallet: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <Sidebar items={tabItems} defaultActiveId="assets" />
-    </div>
+    <NavigationProvider defaultActiveId="assets">
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <Sidebar items={tabItems} />
+      </div>
+    </NavigationProvider>
   );
 };

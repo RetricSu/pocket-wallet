@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ccc } from "@ckb-ccc/core";
-import { useLightClient, useNostrSigner } from "../../contexts";
+import { useLightClient, useNostrSigner, useNavigation } from "../../contexts";
 
 interface AssetsTabProps {}
 
 export const AssetsTab: React.FC<AssetsTabProps> = () => {
   const { client, isClientStarted: isClientStart } = useLightClient();
   const { recommendedAddressObj } = useNostrSigner();
+  const { setActiveTabId } = useNavigation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [balance, setBalance] = useState<bigint | null>(null);
@@ -52,7 +53,10 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
           <p className="text-text-secondary text-sm mb-6">≈ $0.00 USD</p>
 
           <div className="flex gap-3">
-            <button className="px-5 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium flex items-center gap-2">
+            <button
+              className="px-5 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium flex items-center gap-2"
+              onClick={() => setActiveTabId("receive")}
+            >
               <span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -60,7 +64,10 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
               </span>
               Receive
             </button>
-            <button className="px-5 py-3 bg-transparent text-text-primary rounded-lg hover:bg-secondary/50 transition-colors font-medium border border-border/40 flex items-center gap-2">
+            <button
+              className="px-5 py-3 bg-transparent text-text-primary rounded-lg hover:bg-secondary/50 transition-colors font-medium border border-border/40 flex items-center gap-2"
+              onClick={() => setActiveTabId("send")}
+            >
               <span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path

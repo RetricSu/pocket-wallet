@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Account } from "./Account";
 import { TabContentWrapper } from "./TabContentWrapper";
+import { useNavigation } from "../contexts";
 
 export interface TabItem {
   id: string;
@@ -34,8 +35,8 @@ interface SidebarProps {
   defaultActiveId?: string;
 }
 
-export const Sidebar: React.FC<SidebarProps & { className?: string }> = ({ items, defaultActiveId, className }) => {
-  const [activeTabId, setActiveTabId] = useState(defaultActiveId || items[0]?.id);
+export const Sidebar: React.FC<SidebarProps & { className?: string }> = ({ items, className }) => {
+  const { activeTabId, setActiveTabId } = useNavigation();
   const activeTab = items.find((item) => item.id === activeTabId);
 
   return (
