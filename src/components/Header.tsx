@@ -1,7 +1,6 @@
 import { useLightClient } from "../contexts";
 import { NetworkIcon } from "./icons/network";
 import { SyncIcon } from "./icons/sync";
-import { NostrLogo } from "./icons/NostrLogo";
 import { patchLightClientBigintType } from "../utils/stringUtils";
 
 export const Header = () => {
@@ -16,7 +15,7 @@ export const Header = () => {
       <div className="px-6 py-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent flex items-center gap-2">
-            <NostrLogo className="w-8 h-8" />
+            <img src="/images/pocket-wallet-logo.png" alt="Pocket Wallet Logo" className="h-8" />
             Pocket Wallet
           </h1>
           <div className="flex items-center gap-6">
