@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { bytesTo, NostrEvent, Transaction, WitnessArgs } from "@ckb-ccc/core";
 import { verifyEvent } from "nostr-tools";
 import ReactDOM from "react-dom";
+import { formatCKBBalance } from "../utils/stringUtils";
 
 interface NostrVerifyModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface NostrVerifyModalProps {
 
 export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onClose, transaction }) => {
   const [verificationStatus, setVerificationStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const [expandedOutputs, setExpandedOutputs] = useState<Record<number, boolean>>({});
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -93,7 +95,7 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
             <h3 className="text-sm font-medium text-text-secondary mb-2">Inputs</h3>
             <div className="space-y-2">
               {transaction.inputs.map((input, index) => (
-                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 p-2 rounded">
+                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 px-2 rounded">
                   <div>
                     {input.previousOutput.txHash}#{input.previousOutput.index.toString()}
                   </div>
@@ -106,11 +108,34 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
             <h3 className="text-sm font-medium text-text-secondary mb-2">Outputs</h3>
             <div className="space-y-2">
               {transaction.outputs.map((output, index) => (
-                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 p-2 rounded">
-                  <div>Capacity: {output.capacity.toString()}</div>
-                  <div>Lock: {output.lock?.codeHash}</div>
-                  <div>Args: {output.lock?.args}</div>
-                  <div>Hash Type: {output.lock?.hashType}</div>
+                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 px-2 rounded">
+                  <div className="flex justify-between items-center">
+                    <div>{formatCKBBalance(output.capacity)} CKB</div>
+                    <button
+                      className="text-xs text-primary hover:underline"
+                      onClick={() => {
+                        setExpandedOutputs((prev) => ({
+                          ...prev,
+                          [index]: !prev[index],
+                        }));
+                      }}
+                    >
+                      {expandedOutputs[index] ? "Hide Lock" : "Show Lock"}
+                    </button>
+                  </div>
+                  <div
+                    style={{
+                      display: expandedOutputs[index] ? "block" : "none",
+                      maxHeight: "150px",
+                      overflowY: "auto",
+                      overflowX: "scroll",
+                    }}
+                    className="mt-2 pl-2 border-l border-white/20 overflow-x-auto whitespace-pre"
+                  >
+                    <div>Code Hash: {output.lock?.codeHash}</div>
+                    <div>Args: {output.lock?.args}</div>
+                    <div>Hash Type: {output.lock?.hashType}</div>
+                  </div>
                 </div>
               ))}
             </div>
