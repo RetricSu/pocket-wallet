@@ -5,7 +5,7 @@ import { useNostrSigner } from "../../contexts";
 import { truncateAddress } from "../../utils/stringUtils";
 
 export const SendTab: React.FC = () => {
-  const { signer } = useNostrSigner();
+  const { signer, isConnected } = useNostrSigner();
   const { client } = useLightClient();
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -13,6 +13,11 @@ export const SendTab: React.FC = () => {
   const [txHash, setTxHash] = useState<string | null>(null);
 
   const handleSend = async () => {
+    if (!signer || !isConnected) {
+      console.error("No signer or not connected");
+      return;
+    }
+
     console.log("Sending CKB to:", recipientAddress, "Amount:", amount);
     const address = await ccc.Address.fromString(recipientAddress, signer.client);
     const toLock = address.script;

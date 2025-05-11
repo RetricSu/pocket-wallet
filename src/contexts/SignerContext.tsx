@@ -7,11 +7,13 @@ import { APP_CONFIG } from "../lib/app-config";
 
 // Signer Context
 export interface NostrSignerContextType {
-  signer: ccc.SignerNostrPrivateKey | Nip07.Signer;
+  signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined;
   recommendedAddress: string | null;
   recommendedAddressObj: ccc.Address | null;
   nostrPublicKey: string | null;
-  setNostrAccount: (account: { publicKey: string; privateKey: string }) => void;
+  isConnected: boolean;
+  setSigner: (signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined) => void;
+  disconnect: () => void;
 }
 
 const NostrSignerContext = createContext<NostrSignerContextType | undefined>(undefined);
@@ -20,27 +22,33 @@ export const NostrSignerProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
   const { client, isClientStarted: isClientStart } = useLightClient();
-  const [nostrAccount, setNostrAccount] = useState<{ publicKey: string; privateKey: string }>({
-    publicKey: "f879eb8207a69c1429267ab666cf722f18edc8549253e81be5a1ef93513e14dc",
-    privateKey: "fda2c1f734627f6c4c4220858f8630dbdf778a4bfaee4c657cb4a91ef5c56333",
-  });
   const [nostrPublicKey, setNostrPublicKey] = useState<string | null>(null);
-  const [signerReady, setSignerReady] = useState(false);
   const [recommendedAddressObj, setRecommendedAddressObj] = useState<ccc.Address | null>(null);
   const [recommendedAddress, setRecommendedAddress] = useState<string | null>(null);
-  const signerRef = useRef<ccc.SignerNostrPrivateKey | Nip07.Signer | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  const signerRef = useRef<ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined>(null);
+
+  const setSigner = useCallback((signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined) => {
+    signerRef.current = signer;
+    setIsConnected(!!signer);
+  }, []);
+
+  const disconnect = useCallback(() => {
+    signerRef.current = null;
+    setRecommendedAddressObj(null);
+    setRecommendedAddress(null);
+    setNostrPublicKey(null);
+    setIsConnected(false);
+  }, []);
 
   // initialize signer
   useEffect(() => {
-    const nip07Signer = Nip07.getNip07Signer(client);
-    signerRef.current = nip07Signer ?? new ccc.SignerNostrPrivateKey(client, nostrAccount.privateKey);
-    setSignerReady(true);
-
     return () => {
       signerRef.current = null;
-      setSignerReady(false);
+      setIsConnected(false);
     };
-  }, [client]);
+  }, []);
 
   const updateSignerInfo = useCallback(async () => {
     if (signerRef.current) {
@@ -96,11 +104,6 @@ export const NostrSignerProvider: React.FC<{
     tryResetScriptsIfNeeded();
   }, [tryResetScriptsIfNeeded]);
 
-  // Ensure signer is available before providing context
-  if (!signerRef.current || !signerReady) {
-    return <div>Loading Nostr signer...</div>; // Show a loading indicator
-  }
-
   return (
     <NostrSignerContext.Provider
       value={{
@@ -108,7 +111,9 @@ export const NostrSignerProvider: React.FC<{
         recommendedAddress,
         recommendedAddressObj,
         nostrPublicKey,
-        setNostrAccount,
+        isConnected,
+        setSigner,
+        disconnect,
       }}
     >
       {children}

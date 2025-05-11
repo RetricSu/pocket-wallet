@@ -20,7 +20,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
 
   const refreshBalance = async () => {
     if (isLoading) return;
-    if (!recommendedAddressObj) return;
+    if (!recommendedAddressObj) return setBalance(null);
 
     try {
       setIsLoading(true);
