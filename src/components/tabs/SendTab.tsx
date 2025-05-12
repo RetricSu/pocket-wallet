@@ -2,7 +2,6 @@ import { ccc } from "@ckb-ccc/core";
 import React, { useEffect, useState } from "react";
 import { useLightClient } from "../../contexts";
 import { useNostrSigner } from "../../contexts";
-import { truncateAddress } from "../../utils/stringUtils";
 import { nostrService, ProfileInfo } from "../../services/nostr";
 import { ProfileImg } from "../common/ProfileImg";
 
@@ -121,7 +120,7 @@ export const SendTab: React.FC = () => {
           </div>
           <a
             className="underline hover:text-white/80 ml-2 text-sm flex items-center"
-            href={`https://explorer.nervos.org/transaction/${txHash}`}
+            href={`https://testnet.explorer.nervos.org/transaction/${txHash}`}
             target="_blank"
             rel="noopener noreferrer"
           >
