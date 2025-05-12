@@ -112,7 +112,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, []);
 
-  const updateSyncStatus = async () => {
+  const updateSyncStatus = useCallback(async () => {
     console.log("[updateSyncStatus] updating sync status...");
     try {
       const [peers, localNodeInfo, tipHeader, scriptStatus] = await Promise.all([
@@ -136,7 +136,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
     } catch (error) {
       console.error("Failed to update sync status:", error);
     }
-  };
+  }, []);
 
   const startUpdateSyncStatus = useCallback(async () => {
     if (syncStatusIntervalRef.current || isUpdatingSyncStatus) {

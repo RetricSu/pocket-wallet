@@ -1,15 +1,12 @@
 import { ccc } from "@ckb-ccc/core";
-import { SimplePool } from "nostr-tools";
 import { parseBunkerInput, BunkerSigner } from "nostr-tools/nip46";
 export class Nip46Provider {
-  private pool: SimplePool;
   private readonly secretKey: Uint8Array;
   private bunker?: BunkerSigner;
   public isConnected = false;
 
   constructor(secretKey: Uint8Array) {
     this.secretKey = secretKey;
-    this.pool = new SimplePool();
   }
 
   async connect(bunkerString: string) {
@@ -17,8 +14,24 @@ export class Nip46Provider {
     if (!bunkerPointer) {
       throw new Error("Invalid bunker input");
     }
-    this.bunker = new BunkerSigner(this.secretKey, bunkerPointer, { pool: this.pool });
+    this.bunker = new BunkerSigner(this.secretKey, bunkerPointer);
+    console.debug("create new bunkerSigner:", bunkerPointer);
     await this.bunker.connect();
+    await this.bunker.getPublicKey();
+    console.debug("bunker connected");
+    this.isConnected = true;
+    return this.bunker;
+  }
+
+  async reconnect(bunkerString: string) {
+    const bunkerPointer = await parseBunkerInput(bunkerString);
+    if (!bunkerPointer) {
+      throw new Error("Invalid bunker input");
+    }
+    this.bunker = new BunkerSigner(this.secretKey, bunkerPointer);
+    console.debug("rebuild new bunkerSigner:", bunkerPointer);
+    await this.bunker.getPublicKey();
+    console.debug("bunker connected");
     this.isConnected = true;
     return this.bunker;
   }
@@ -26,7 +39,6 @@ export class Nip46Provider {
   async disconnect() {
     this.isConnected = false;
     await this.bunker?.close();
-    await this.pool.close([]);
     this.bunker = undefined;
   }
 

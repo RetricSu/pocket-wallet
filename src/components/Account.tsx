@@ -12,9 +12,16 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import { APP_CONFIG } from "../lib/app-config";
 import { BunkerConnectModal } from "./BunkerConnectModal";
 
+// Define login method types
+type LoginMethod = {
+  type: "nip07" | "nip46";
+  bunkerString?: string;
+};
+
 export const Account = () => {
   const { isConnected, nostrPublicKey, recommendedAddress, disconnect } = useNostrSigner();
   const [profile, setProfile] = useState<{ name: string; about: string; picture: string } | null>(null);
+  const [, setLoginMethod] = useLocalStorage<LoginMethod | null>("nostr-wallet-login-method", null);
 
   const npub = useMemo(() => {
     if (nostrPublicKey) {
@@ -33,6 +40,13 @@ export const Account = () => {
   useEffect(() => {
     getUserProfile();
   }, [nostrPublicKey]);
+
+  const handleDisconnect = () => {
+    // Clear login method from local storage
+    setLoginMethod(null);
+    // Call the disconnect function from context
+    disconnect();
+  };
 
   if (!isConnected) {
     return <SignInAccount />;
@@ -68,7 +82,7 @@ export const Account = () => {
           </div>
         </div>
         <div className="flex items-center justify-center">
-          <button className="text-xs text-text-secondary/60" onClick={disconnect}>
+          <button className="text-xs text-text-secondary/60" onClick={handleDisconnect}>
             Disconnect
           </button>
         </div>
@@ -81,23 +95,34 @@ export const SignInAccount = () => {
   const { setSigner } = useNostrSigner();
   const { client } = useLightClient();
   const [secretKey, setSecretKey] = useLocalStorage<string | null>(APP_CONFIG.nip46BunkerSecretKeyName, null);
+  const [loginMethod, setLoginMethod] = useLocalStorage<LoginMethod | null>("nostr-wallet-login-method", null);
   const [isNip07Loading, setIsNip07Loading] = useState(false);
   const [isNip46Loading, setIsNip46Loading] = useState(false);
   const [isNip46ModalOpen, setIsNip46ModalOpen] = useState(false);
+  const [isAutoConnecting, setIsAutoConnecting] = useState(false);
 
-  const nip07SignIn = () => {
+  const nip07SignIn = async () => {
     setIsNip07Loading(true);
-    // NIP-07 extension sign-in would be implemented here
-    const signer = Nip07.getNip07Signer(client);
-    setSigner(signer);
-    setIsNip07Loading(false);
+    try {
+      // NIP-07 extension sign-in would be implemented here
+      const signer = Nip07.getNip07Signer(client);
+      setSigner(signer);
+      // Store login method
+      setLoginMethod({ type: "nip07" });
+      return true;
+    } catch (error) {
+      console.error("Failed to connect with NIP-07:", error);
+      return false;
+    } finally {
+      setIsNip07Loading(false);
+    }
   };
 
   const openNip46Modal = () => {
     setIsNip46ModalOpen(true);
   };
 
-  const nip46SignIn = async (bunkerString: string) => {
+  const nip46SignIn = async (bunkerString: string, isAutoConnect: boolean = false) => {
     setIsNip46Loading(true);
     try {
       let nip46SecretKey: Uint8Array;
@@ -107,38 +132,94 @@ export const SignInAccount = () => {
       } else {
         nip46SecretKey = base64ToUint8Array(secretKey);
       }
-      console.log("nip46SecretKey", nip46SecretKey);
+
       const signer = createNip46Signer(client, nip46SecretKey);
-      await signer.connectToBunker(bunkerString);
+      if (isAutoConnect) {
+        await signer.reconnectToBunker(bunkerString);
+      } else {
+        await signer.connectToBunker(bunkerString);
+      }
+
       setSigner(signer);
+
+      // Store login method with bunker string for auto-reconnect
+      setLoginMethod({
+        type: "nip46",
+        bunkerString,
+      });
+
       setIsNip46ModalOpen(false);
+      return true;
     } catch (error) {
       console.error("Failed to connect to Bunker:", error);
+      return false;
     } finally {
       setIsNip46Loading(false);
     }
   };
 
+  // Auto-connect on component mount if login method is stored
+  const autoConnect = async () => {
+    if (!loginMethod || isAutoConnecting) return;
+
+    setIsAutoConnecting(true);
+    try {
+      console.log("Auto-connecting with method:", loginMethod.type);
+      let success = false;
+
+      if (loginMethod.type === "nip07") {
+        success = await nip07SignIn();
+      } else if (loginMethod.type === "nip46" && loginMethod.bunkerString && secretKey) {
+        success = await nip46SignIn(loginMethod.bunkerString, true);
+      }
+
+      if (!success) {
+        console.warn("Auto-connect failed, clearing login method");
+        setLoginMethod(null);
+      }
+    } catch (error) {
+      console.error("Failed to auto-connect:", error);
+      // Clear login method if auto-connect fails
+      setLoginMethod(null);
+    } finally {
+      setIsAutoConnecting(false);
+    }
+  };
+
+  useEffect(() => {
+    autoConnect();
+  }, [loginMethod]);
+
   return (
     <div className="rounded-xl shadow-lg border p-4 border-neutral-200 relative">
       <div className="flex flex-col items-center gap-2 mb-6">
         <div className="flex flex-col items-center pt-2">
-          <p className="text-xs text-text-secondary/60 text-center">Sign in to use wallet</p>
+          <p className="text-xs text-text-secondary/60 text-center">
+            {isAutoConnecting ? "Reconnecting..." : "Sign in to use wallet"}
+          </p>
         </div>
       </div>
       <div className="space-y-4">
         <button
-          className={`w-full py-3 px-4 rounded-lg border border-primary flex items-center justify-center gap-2 font-medium transition-colors ${isNip07Loading ? "bg-neutral-100 text-neutral-400" : "bg-primary/10 text-primary hover:bg-primary/20"}`}
+          className={`w-full py-3 px-4 rounded-lg border border-primary flex items-center justify-center gap-2 font-medium transition-colors ${
+            isNip46Loading || isAutoConnecting
+              ? "bg-neutral-100 text-neutral-400"
+              : "bg-primary/10 text-primary hover:bg-primary/20"
+          }`}
           onClick={openNip46Modal}
-          disabled={isNip46Loading}
+          disabled={isNip46Loading || isAutoConnecting}
         >
           {isNip46Loading ? "Connecting..." : "Bunker (NIP-46)"}
         </button>
 
         <button
-          className={`w-full py-3 px-4 rounded-lg border border-neutral-300 flex items-center justify-center gap-2 font-medium transition-colors ${isNip46Loading ? "bg-neutral-100 text-neutral-400" : "bg-white text-text-primary hover:bg-neutral-100"}`}
-          onClick={nip07SignIn}
-          disabled={isNip07Loading}
+          className={`w-full py-3 px-4 rounded-lg border border-neutral-300 flex items-center justify-center gap-2 font-medium transition-colors ${
+            isNip07Loading || isAutoConnecting
+              ? "bg-neutral-100 text-neutral-400"
+              : "bg-white text-text-primary hover:bg-neutral-100"
+          }`}
+          onClick={() => nip07SignIn()}
+          disabled={isNip07Loading || isAutoConnecting}
         >
           {isNip07Loading ? "Connecting..." : "Extension (NIP-07)"}
         </button>

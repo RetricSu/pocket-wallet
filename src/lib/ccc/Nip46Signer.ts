@@ -7,6 +7,7 @@ export class Nip46Signer extends ccc.SignerNostr {
   constructor(
     client: ccc.Client,
     public readonly provider: Nip46Provider,
+    public defaultConnectTimeout: number = 60000,
   ) {
     super(client);
   }
@@ -29,8 +30,20 @@ export class Nip46Signer extends ccc.SignerNostr {
     });
   }
 
-  async connectToBunker(bunkerString: string): Promise<void> {
-    await this.provider.connect(bunkerString);
+  async connectToBunker(bunkerString: string, timeout: number = this.defaultConnectTimeout): Promise<void> {
+    const connectPromise = this.provider.connect(bunkerString);
+    const timeoutPromise = new Promise<void>((_, reject) =>
+      setTimeout(() => reject(new Error("Bunker Connection timeout")), timeout),
+    );
+    await Promise.race([connectPromise, timeoutPromise]);
+  }
+
+  async reconnectToBunker(bunkerString: string, timeout: number = this.defaultConnectTimeout): Promise<void> {
+    const reconnectPromise = this.provider.reconnect(bunkerString);
+    const timeoutPromise = new Promise<void>((_, reject) =>
+      setTimeout(() => reject(new Error("BunkerReconnection timeout")), timeout),
+    );
+    await Promise.race([reconnectPromise, timeoutPromise]);
   }
 
   async connect() {
