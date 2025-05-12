@@ -1,7 +1,7 @@
 import { useLightClient } from "../contexts";
 import { Nip07 } from "@ckb-ccc/nip07";
 import { useNostrSigner } from "../contexts";
-import { truncateString } from "../utils/stringUtils";
+import { base64ToUint8Array, truncateString, uint8ArrayToBase64 } from "../utils/stringUtils";
 import { CopyButton } from "./common/CopyButton";
 import { ProfileImg } from "./common/ProfileImg";
 import { useEffect, useMemo, useState } from "react";
@@ -80,7 +80,7 @@ export const Account = () => {
 export const SignInAccount = () => {
   const { setSigner } = useNostrSigner();
   const { client } = useLightClient();
-  const [secretKey, setSecretKey] = useLocalStorage<Uint8Array | null>(APP_CONFIG.nip46BunkerSecretKeyName, null);
+  const [secretKey, setSecretKey] = useLocalStorage<string | null>(APP_CONFIG.nip46BunkerSecretKeyName, null);
   const [isNip07Loading, setIsNip07Loading] = useState(false);
   const [isNip46Loading, setIsNip46Loading] = useState(false);
   const [isNip46ModalOpen, setIsNip46ModalOpen] = useState(false);
@@ -100,17 +100,20 @@ export const SignInAccount = () => {
   const nip46SignIn = async (bunkerString: string) => {
     setIsNip46Loading(true);
     try {
-      let nip46SecretKey = secretKey;
-      if (nip46SecretKey === null) {
+      let nip46SecretKey: Uint8Array;
+      if (secretKey === null) {
         nip46SecretKey = generateSecretKey();
-        setSecretKey(nip46SecretKey);
+        setSecretKey(uint8ArrayToBase64(nip46SecretKey));
+      } else {
+        nip46SecretKey = base64ToUint8Array(secretKey);
       }
+      console.log("nip46SecretKey", nip46SecretKey);
       const signer = createNip46Signer(client, nip46SecretKey);
       await signer.connectToBunker(bunkerString);
       setSigner(signer);
       setIsNip46ModalOpen(false);
     } catch (error) {
-      console.error("Failed to connect to NSECBunker:", error);
+      console.error("Failed to connect to Bunker:", error);
     } finally {
       setIsNip46Loading(false);
     }

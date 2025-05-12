@@ -38,3 +38,18 @@ export function patchLightClientBigintType(value: bigint | undefined | null): st
 
   return (+value.toString()).toString();
 }
+
+// Binary Uint8Array to Base64 string
+export const uint8ArrayToBase64 = (array: Uint8Array) => {
+  return btoa(String.fromCharCode.apply(null, Array.from(array)));
+};
+
+// Base64 string to Uint8Array
+export const base64ToUint8Array = (base64: string) => {
+  const binary = atob(base64);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    array[i] = binary.charCodeAt(i);
+  }
+  return array;
+};
