@@ -13,6 +13,7 @@ interface NostrVerifyModalProps {
 export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onClose, transaction }) => {
   const [verificationStatus, setVerificationStatus] = useState<{ success: boolean; message: string } | null>(null);
   const [expandedOutputs, setExpandedOutputs] = useState<Record<number, boolean>>({});
+  const [showNotification, setShowNotification] = useState(false);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -34,6 +35,18 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
       };
     }
   }, [isOpen]);
+
+  // Effect to handle notification display and auto-hide
+  useEffect(() => {
+    if (verificationStatus) {
+      setShowNotification(true);
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [verificationStatus]);
 
   const parseWitnessToEvent = (witness: string) => {
     const args = WitnessArgs.fromBytes(witness);
@@ -75,7 +88,7 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
       style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
     >
       <div
-        className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+        className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
@@ -84,6 +97,18 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
             ✕
           </button>
         </div>
+
+        {/* Floating notification */}
+        {showNotification && verificationStatus && (
+          <div
+            className={`absolute left-0 right-0 mx-6 py-2 px-4 rounded transition-opacity duration-300 ${
+              verificationStatus.success ? "bg-green-600 text-black" : "bg-red-600 text-black"
+            }`}
+            style={{ top: "3.5rem" }}
+          >
+            <p className="text-sm font-medium">{verificationStatus.message}</p>
+          </div>
+        )}
 
         <div className="space-y-4">
           <div>
@@ -207,11 +232,6 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
                 </code>
               </pre>
             </div>
-            {verificationStatus && (
-              <div className={`mt-4 rounded ${verificationStatus.success ? "text-green-600" : "text-red-600"}`}>
-                <p className="text-sm font-medium">{verificationStatus.message}</p>
-              </div>
-            )}
             <div className="flex justify-start space-x-4 mt-6">
               <button
                 className="px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:bg-primary/90 transition-colors"
