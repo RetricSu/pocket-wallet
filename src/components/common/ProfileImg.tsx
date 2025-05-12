@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AccountIcon } from "./icons/account";
+import { AccountIcon } from "../icons/account";
 
 interface ProfileImgProps {
   imageUrl?: string;

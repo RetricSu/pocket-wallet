@@ -3,10 +3,14 @@ import { Nip07 } from "@ckb-ccc/nip07";
 import { useNostrSigner } from "../contexts";
 import { truncateString } from "../utils/stringUtils";
 import { CopyButton } from "./common/CopyButton";
-import { ProfileImg } from "./ProfileImg";
+import { ProfileImg } from "./common/ProfileImg";
 import { useEffect, useMemo, useState } from "react";
-import { nip19 } from "nostr-tools";
+import { generateSecretKey, nip19 } from "nostr-tools";
 import { nostrService } from "../services/nostr";
+import { createNip46Signer } from "../lib/ccc/Nip46";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { APP_CONFIG } from "../lib/app-config";
+import { BunkerConnectModal } from "./BunkerConnectModal";
 
 export const Account = () => {
   const { isConnected, nostrPublicKey, recommendedAddress, disconnect } = useNostrSigner();
@@ -76,14 +80,40 @@ export const Account = () => {
 export const SignInAccount = () => {
   const { setSigner } = useNostrSigner();
   const { client } = useLightClient();
-  const [isLoading, setIsLoading] = useState(false);
+  const [secretKey, setSecretKey] = useLocalStorage<Uint8Array | null>(APP_CONFIG.nip46BunkerSecretKeyName, null);
+  const [isNip07Loading, setIsNip07Loading] = useState(false);
+  const [isNip46Loading, setIsNip46Loading] = useState(false);
+  const [isNip46ModalOpen, setIsNip46ModalOpen] = useState(false);
 
   const nip07SignIn = () => {
-    setIsLoading(true);
+    setIsNip07Loading(true);
     // NIP-07 extension sign-in would be implemented here
     const signer = Nip07.getNip07Signer(client);
     setSigner(signer);
-    setIsLoading(false);
+    setIsNip07Loading(false);
+  };
+
+  const openNip46Modal = () => {
+    setIsNip46ModalOpen(true);
+  };
+
+  const nip46SignIn = async (bunkerString: string) => {
+    setIsNip46Loading(true);
+    try {
+      let nip46SecretKey = secretKey;
+      if (nip46SecretKey === null) {
+        nip46SecretKey = generateSecretKey();
+        setSecretKey(nip46SecretKey);
+      }
+      const signer = createNip46Signer(client, nip46SecretKey);
+      await signer.connectToBunker(bunkerString);
+      setSigner(signer);
+      setIsNip46ModalOpen(false);
+    } catch (error) {
+      console.error("Failed to connect to NSECBunker:", error);
+    } finally {
+      setIsNip46Loading(false);
+    }
   };
 
   return (
@@ -95,25 +125,28 @@ export const SignInAccount = () => {
       </div>
       <div className="space-y-4">
         <button
-          className={`w-full py-3 px-4 rounded-lg border border-primary flex items-center justify-center gap-2 font-medium transition-colors ${isLoading ? "bg-neutral-100 text-neutral-400" : "bg-primary/10 text-primary hover:bg-primary/20"}`}
+          className={`w-full py-3 px-4 rounded-lg border border-primary flex items-center justify-center gap-2 font-medium transition-colors ${isNip07Loading ? "bg-neutral-100 text-neutral-400" : "bg-primary/10 text-primary hover:bg-primary/20"}`}
           onClick={nip07SignIn}
-          disabled={isLoading}
+          disabled={isNip07Loading}
         >
-          {isLoading ? "Connecting..." : "Extension (NIP-07)"}
+          {isNip07Loading ? "Connecting..." : "Extension (NIP-07)"}
         </button>
 
         <button
-          className={`w-full py-3 px-4 rounded-lg border border-neutral-300 flex items-center justify-center gap-2 font-medium transition-colors ${isLoading ? "bg-neutral-100 text-neutral-400" : "bg-white text-text-primary hover:bg-neutral-100"}`}
-          onClick={() => {
-            setIsLoading(true);
-            // NIP-46 nsecbunker sign-in would be implemented here
-            setTimeout(() => setIsLoading(false), 1000); // Simulating loading state
-          }}
-          disabled={isLoading}
+          className={`w-full py-3 px-4 rounded-lg border border-neutral-300 flex items-center justify-center gap-2 font-medium transition-colors ${isNip46Loading ? "bg-neutral-100 text-neutral-400" : "bg-white text-text-primary hover:bg-neutral-100"}`}
+          onClick={openNip46Modal}
+          disabled={isNip46Loading}
         >
-          {isLoading ? "Connecting..." : "NSECBunker (NIP-46)"}
+          {isNip46Loading ? "Connecting..." : "NSECBunker (NIP-46)"}
         </button>
       </div>
+
+      <BunkerConnectModal
+        isOpen={isNip46ModalOpen}
+        onClose={() => setIsNip46ModalOpen(false)}
+        onConnect={nip46SignIn}
+        isLoading={isNip46Loading}
+      />
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { useLightClient } from "../../contexts";
 import { useNostrSigner } from "../../contexts";
 import { truncateAddress } from "../../utils/stringUtils";
 import { nostrService, ProfileInfo } from "../../services/nostr";
-import { ProfileImg } from "../ProfileImg";
+import { ProfileImg } from "../common/ProfileImg";
 
 export const SendTab: React.FC = () => {
   const { signer, isConnected, nostrPublicKey } = useNostrSigner();

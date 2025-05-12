@@ -45,10 +45,6 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
         <div className="text-md font-medium">Wasm Light Client Status</div>
         <div className="p-2 text-sm flex justify-start gap-10">
           <div>
-            <div>
-              <span className="text-text-primary">NodeId: </span>
-              <span className="text-primary">{localNode?.nodeId}</span>
-            </div>
             <div className="flex justify-start gap-6">
               <div>
                 <span className="text-text-primary">Active: </span>
@@ -58,6 +54,10 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
                 <span className="text-text-primary">Light Client Version: </span>
                 <span className="text-primary">{localNode?.version}</span>
               </div>
+            </div>
+            <div>
+              <span className="text-text-primary">NodeId: </span>
+              <span className="text-primary">{localNode?.nodeId}</span>
             </div>
             <div className="max-w-[400px] overflow-x-scroll whitespace-nowrap">
               <span className="text-text-primary">Protocol: </span>
