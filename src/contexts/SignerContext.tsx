@@ -4,15 +4,18 @@ import React, { createContext, useContext, useState, ReactNode, useEffect, useRe
 import { useLightClient } from "./LightClientContext";
 import { LightClientSetScriptsCommand } from "ckb-light-client-js";
 import { APP_CONFIG } from "../lib/app-config";
+import { Nip46Signer } from "../lib/ccc/Nip46Signer";
+
+export type MultiNostrSigner = ccc.SignerNostrPrivateKey | Nip07.Signer | Nip46Signer;
 
 // Signer Context
 export interface NostrSignerContextType {
-  signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined;
+  signer: MultiNostrSigner | undefined | null;
   recommendedAddress: string | null;
   recommendedAddressObj: ccc.Address | null;
   nostrPublicKey: string | null;
   isConnected: boolean;
-  setSigner: (signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined) => void;
+  setSigner: (signer: MultiNostrSigner | undefined | null) => void;
   disconnect: () => void;
 }
 
@@ -27,14 +30,17 @@ export const NostrSignerProvider: React.FC<{
   const [recommendedAddress, setRecommendedAddress] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
-  const signerRef = useRef<ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined>(null);
+  const signerRef = useRef<MultiNostrSigner | undefined | null>(null);
 
-  const setSigner = useCallback((signer: ccc.SignerNostrPrivateKey | Nip07.Signer | null | undefined) => {
+  const setSigner = useCallback((signer: MultiNostrSigner | undefined | null) => {
     signerRef.current = signer;
     setIsConnected(!!signer);
   }, []);
 
   const disconnect = useCallback(() => {
+    if (signerRef.current) {
+      signerRef.current.disconnect();
+    }
     signerRef.current = null;
     setRecommendedAddressObj(null);
     setRecommendedAddress(null);

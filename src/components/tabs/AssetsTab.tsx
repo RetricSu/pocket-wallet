@@ -54,7 +54,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
 
           <div className="flex gap-3">
             <button
-              className="px-5 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium flex items-center gap-2"
+              className="px-5 py-3 bg-transparent text-text-primary rounded-lg hover:bg-primary hover:text-secondary transition-colors font-medium border border-border/40 flex items-center gap-2"
               onClick={() => setActiveTabId("receive")}
             >
               <span>
@@ -65,7 +65,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
               Receive
             </button>
             <button
-              className="px-5 py-3 bg-transparent text-text-primary rounded-lg hover:bg-secondary/50 transition-colors font-medium border border-border/40 flex items-center gap-2"
+              className="px-5 py-3 bg-transparent text-text-primary rounded-lg hover:bg-primary hover:text-secondary transition-colors font-medium border border-border/40 flex items-center gap-2"
               onClick={() => setActiveTabId("send")}
             >
               <span>

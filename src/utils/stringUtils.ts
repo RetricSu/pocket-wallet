@@ -22,6 +22,12 @@ export const formatCKBBalance = (balance: number | string | bigint | null): stri
   return new Intl.NumberFormat().format(Number(balanceStr));
 };
 
+export const formatCKBBalanceChange = (balanceChanges: number | string | bigint | null): string => {
+  if (balanceChanges === null) return "0";
+  const balanceStr = ccc.fixedPointToString(balanceChanges, 8).replace(/-/g, "");
+  return balanceStr;
+};
+
 export function patchLightClientBigintType(value: bigint | undefined | null): string {
   if (value == null) {
     return "0";
@@ -32,3 +38,18 @@ export function patchLightClientBigintType(value: bigint | undefined | null): st
 
   return (+value.toString()).toString();
 }
+
+// Binary Uint8Array to Base64 string
+export const uint8ArrayToBase64 = (array: Uint8Array) => {
+  return btoa(String.fromCharCode.apply(null, Array.from(array)));
+};
+
+// Base64 string to Uint8Array
+export const base64ToUint8Array = (base64: string) => {
+  const binary = atob(base64);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    array[i] = binary.charCodeAt(i);
+  }
+  return array;
+};

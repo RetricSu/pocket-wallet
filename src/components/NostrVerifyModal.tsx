@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { bytesTo, NostrEvent, Transaction, WitnessArgs } from "@ckb-ccc/core";
 import { verifyEvent } from "nostr-tools";
+import ReactDOM from "react-dom";
+import { formatCKBBalance } from "../utils/stringUtils";
 
 interface NostrVerifyModalProps {
   isOpen: boolean;
@@ -10,6 +12,8 @@ interface NostrVerifyModalProps {
 
 export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onClose, transaction }) => {
   const [verificationStatus, setVerificationStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const [expandedOutputs, setExpandedOutputs] = useState<Record<number, boolean>>({});
+  const [showNotification, setShowNotification] = useState(false);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -31,6 +35,18 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
       };
     }
   }, [isOpen]);
+
+  // Effect to handle notification display and auto-hide
+  useEffect(() => {
+    if (verificationStatus) {
+      setShowNotification(true);
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [verificationStatus]);
 
   const parseWitnessToEvent = (witness: string) => {
     const args = WitnessArgs.fromBytes(witness);
@@ -65,10 +81,14 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
   // If modal is not open, don't render anything
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
+  const modalContent = (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+      onClick={onClose}
+      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
+    >
       <div
-        className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+        className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
@@ -77,6 +97,18 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
             ✕
           </button>
         </div>
+
+        {/* Floating notification */}
+        {showNotification && verificationStatus && (
+          <div
+            className={`absolute left-0 right-0 mx-6 py-2 px-4 rounded transition-opacity duration-300 ${
+              verificationStatus.success ? "bg-green-600 text-black" : "bg-red-600 text-black"
+            }`}
+            style={{ top: "3.5rem" }}
+          >
+            <p className="text-sm font-medium">{verificationStatus.message}</p>
+          </div>
+        )}
 
         <div className="space-y-4">
           <div>
@@ -88,7 +120,7 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
             <h3 className="text-sm font-medium text-text-secondary mb-2">Inputs</h3>
             <div className="space-y-2">
               {transaction.inputs.map((input, index) => (
-                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 p-2 rounded">
+                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 px-2 rounded">
                   <div>
                     {input.previousOutput.txHash}#{input.previousOutput.index.toString()}
                   </div>
@@ -101,11 +133,34 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
             <h3 className="text-sm font-medium text-text-secondary mb-2">Outputs</h3>
             <div className="space-y-2">
               {transaction.outputs.map((output, index) => (
-                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 p-2 rounded">
-                  <div>Capacity: {output.capacity.toString()}</div>
-                  <div>Lock: {output.lock?.codeHash}</div>
-                  <div>Args: {output.lock?.args}</div>
-                  <div>Hash Type: {output.lock?.hashType}</div>
+                <div key={index} className="text-sm text-text-primary font-mono break-all bg-white/5 px-2 rounded">
+                  <div className="flex justify-between items-center">
+                    <div>{formatCKBBalance(output.capacity)} CKB</div>
+                    <button
+                      className="text-xs text-primary hover:underline"
+                      onClick={() => {
+                        setExpandedOutputs((prev) => ({
+                          ...prev,
+                          [index]: !prev[index],
+                        }));
+                      }}
+                    >
+                      {expandedOutputs[index] ? "Hide Lock" : "Show Lock"}
+                    </button>
+                  </div>
+                  <div
+                    style={{
+                      display: expandedOutputs[index] ? "block" : "none",
+                      maxHeight: "150px",
+                      overflowY: "auto",
+                      overflowX: "scroll",
+                    }}
+                    className="mt-2 pl-2 border-l border-white/20 overflow-x-auto whitespace-pre"
+                  >
+                    <div>Code Hash: {output.lock?.codeHash}</div>
+                    <div>Args: {output.lock?.args}</div>
+                    <div>Hash Type: {output.lock?.hashType}</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -177,11 +232,6 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
                 </code>
               </pre>
             </div>
-            {verificationStatus && (
-              <div className={`mt-4 rounded ${verificationStatus.success ? "text-green-600" : "text-red-600"}`}>
-                <p className="text-sm font-medium">{verificationStatus.message}</p>
-              </div>
-            )}
             <div className="flex justify-start space-x-4 mt-6">
               <button
                 className="px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:bg-primary/90 transition-colors"
@@ -201,4 +251,7 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
       </div>
     </div>
   );
+
+  // Use ReactDOM.createPortal to render the modal directly in the document body
+  return ReactDOM.createPortal(modalContent, document.body);
 };
