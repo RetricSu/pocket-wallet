@@ -4,7 +4,13 @@ import { SyncIcon } from "./icons/sync";
 import { patchLightClientBigintType } from "../utils/stringUtils";
 
 export const Header = () => {
-  const { tipBlockNumber, syncedBlockNumber, localNode, isUpdatingSyncStatus: isUpdatingPeers } = useLightClient();
+  const {
+    tipBlockNumber,
+    syncedBlockNumber,
+    localNode,
+    isUpdatingSyncStatus: isUpdatingPeers,
+    peers,
+  } = useLightClient();
 
   const syncedPercentage =
     syncedBlockNumber && tipBlockNumber ? (Number(syncedBlockNumber) / Number(tipBlockNumber)) * 100 : 0;
@@ -25,9 +31,31 @@ export const Header = () => {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-sm text-text-secondary">
+            <div className="group relative flex items-center gap-2 text-sm text-text-secondary">
               <NodesIcon />
               <span className="font-medium">{patchLightClientBigintType(localNode?.connections)}</span>
+              <div className="absolute top-full right-0 mt-2 px-4 py-3 bg-secondary rounded-xl shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap border border-border z-10">
+                <div className="text-xs text-text-secondary">
+                  <div className="mb-1">
+                    Connected Peers <span className="font-medium">{Array.isArray(peers) ? peers.length : 0}</span>
+                  </div>
+                  <div className="max-h-40 overflow-y-auto mt-2">
+                    {Array.isArray(peers) && peers.length > 0 ? (
+                      peers.map((peer, idx) => (
+                        <div key={idx} className="mb-1 border-t border-border/20 pt-1">
+                          <div className="font-mono text-[10px] truncate max-w-48">{peer.nodeId}</div>
+                          <div className="text-[10px]">
+                            {Math.floor(Number(peer.connestedDuration) / 1000 / 60)} min
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center">No peers</div>
+                    )}
+                  </div>
+                </div>
+                <div className="absolute top-0 right-8 -translate-y-1/2 rotate-45 w-2 h-2 bg-secondary border-t border-l border-border"></div>
+              </div>
             </div>
             <div className="group relative flex items-center gap-2 text-sm text-text-secondary">
               <SyncIcon isUpdating={isUpdatingPeers && truncatedPercentage < 100} />
