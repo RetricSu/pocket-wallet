@@ -126,18 +126,18 @@ export const SignInAccount = () => {
       <div className="space-y-4">
         <button
           className={`w-full py-3 px-4 rounded-lg border border-primary flex items-center justify-center gap-2 font-medium transition-colors ${isNip07Loading ? "bg-neutral-100 text-neutral-400" : "bg-primary/10 text-primary hover:bg-primary/20"}`}
-          onClick={nip07SignIn}
-          disabled={isNip07Loading}
+          onClick={openNip46Modal}
+          disabled={isNip46Loading}
         >
-          {isNip07Loading ? "Connecting..." : "Extension (NIP-07)"}
+          {isNip46Loading ? "Connecting..." : "Bunker (NIP-46)"}
         </button>
 
         <button
           className={`w-full py-3 px-4 rounded-lg border border-neutral-300 flex items-center justify-center gap-2 font-medium transition-colors ${isNip46Loading ? "bg-neutral-100 text-neutral-400" : "bg-white text-text-primary hover:bg-neutral-100"}`}
-          onClick={openNip46Modal}
-          disabled={isNip46Loading}
+          onClick={nip07SignIn}
+          disabled={isNip07Loading}
         >
-          {isNip46Loading ? "Connecting..." : "NSECBunker (NIP-46)"}
+          {isNip07Loading ? "Connecting..." : "Extension (NIP-07)"}
         </button>
       </div>
 

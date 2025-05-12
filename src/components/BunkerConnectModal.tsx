@@ -49,7 +49,7 @@ export const BunkerConnectModal: React.FC<BunkerConnectModalProps> = ({ isOpen, 
     >
       <div className="bg-background rounded-lg p-6 max-w-md w-full relative" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-text-primary">Connect to NSECBunker</h2>
+          <h2 className="text-lg font-medium text-text-primary">Connect to Remote Bunker Signer</h2>
           <button onClick={onClose} className="text-text-secondary hover:text-text-primary">
             ✕
           </button>
@@ -58,14 +58,14 @@ export const BunkerConnectModal: React.FC<BunkerConnectModalProps> = ({ isOpen, 
         <div className="space-y-4">
           <div>
             <label htmlFor="bunkerString" className="block text-sm font-medium text-text-secondary mb-2">
-              Bunker Connection String
+              Nostr Bunker Connection String
             </label>
             <input
               id="bunkerString"
               type="text"
               value={bunkerString}
               onChange={(e) => setBunkerString(e.target.value)}
-              placeholder="Enter your NSECBunker connection string"
+              placeholder="Enter your Bunker URL string"
               className="w-full py-2 px-3 rounded-lg border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
