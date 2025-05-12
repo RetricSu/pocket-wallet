@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef, useCallback } from "react";
 import { LightClientPublicTestnet } from "../lib/ccc/LightClientPublicTestnet";
-import { LightClientSetScriptsCommand, randomSecretKey, ScriptStatus } from "ckb-light-client-js";
+import { LightClientSetScriptsCommand, LocalNode, randomSecretKey, ScriptStatus } from "ckb-light-client-js";
 import { RemoteNode } from "ckb-light-client-js";
 import configRaw from "../lib/config.toml";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -13,7 +13,7 @@ export interface LightClientContextType {
   isClientStarted: boolean;
   isUpdatingSyncStatus: boolean;
   peers: RemoteNode[];
-  connections: bigint | null;
+  localNode: LocalNode | null;
   tipBlockNumber: bigint | null;
   syncedBlockNumber: bigint | null;
   startUpdateSyncStatus: () => void;
@@ -33,7 +33,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isClientStarted, setIsClientStarted] = useState(false);
   const [isUpdatingSyncStatus, setIsUpdatingSyncStatus] = useState(false);
   const [peers, setPeers] = useState<RemoteNode[]>([]);
-  const [connections, setConnections] = useState<bigint | null>(null);
+  const [localNode, setLocalNode] = useState<LocalNode | null>(null);
   const [tipBlockNumber, setTipBlockNumber] = useState<bigint | null>(null);
   const [syncedBlockNumber, setSyncedBlockNumber] = useState<bigint | null>(null);
 
@@ -115,7 +115,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
   const updateSyncStatus = async () => {
     console.log("[updateSyncStatus] updating sync status...");
     try {
-      const [peers, localNodeInfo, tipHeader, res] = await Promise.all([
+      const [peers, localNodeInfo, tipHeader, scriptStatus] = await Promise.all([
         clientRef.current!.lightClient.getPeers(),
         clientRef.current!.lightClient.localNodeInfo(),
         clientRef.current!.lightClient.getTipHeader(),
@@ -124,15 +124,15 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
 
       // clean old data before setting new data
       setPeers([]);
-      setConnections(null);
+      setLocalNode(null);
       setTipBlockNumber(null);
       setSyncedBlockNumber(null);
 
       // set new data
       setPeers(peers);
-      setConnections(localNodeInfo.connections);
+      setLocalNode(localNodeInfo);
       setTipBlockNumber(tipHeader.number);
-      setSyncedBlockNumber(res[0]?.blockNumber);
+      setSyncedBlockNumber(scriptStatus[0]?.blockNumber);
     } catch (error) {
       console.error("Failed to update sync status:", error);
     }
@@ -170,7 +170,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
         client: clientRef.current,
         isClientStarted,
         peers,
-        connections,
+        localNode,
         tipBlockNumber,
         syncedBlockNumber,
         startUpdateSyncStatus,

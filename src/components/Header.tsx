@@ -4,24 +4,30 @@ import { SyncIcon } from "./icons/sync";
 import { patchLightClientBigintType } from "../utils/stringUtils";
 
 export const Header = () => {
-  const { connections, tipBlockNumber, syncedBlockNumber, isUpdatingSyncStatus: isUpdatingPeers } = useLightClient();
+  const { tipBlockNumber, syncedBlockNumber, localNode, isUpdatingSyncStatus: isUpdatingPeers } = useLightClient();
 
   const syncedPercentage =
     syncedBlockNumber && tipBlockNumber ? (Number(syncedBlockNumber) / Number(tipBlockNumber)) * 100 : 0;
   const truncatedPercentage = Math.floor(syncedPercentage * 10000) / 10000;
 
   return (
-    <header className="w-full h-16 bg-background/80 backdrop-blur-sm fixed top-0 left-0 z-40 border-b border-border/30">
-      <div className="px-6 py-4">
+    <header className="w-full bg-background/80 backdrop-blur-sm fixed top-0 left-0 z-40 border-b border-border/30">
+      <div className="px-6 py-2">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent flex items-center gap-2">
-            <img src="/images/pocket-wallet-logo.png" alt="Pocket Wallet Logo" className="h-8" />
-            Pocket Wallet
-          </h1>
+          <div className="flex items-center gap-2">
+            <img src="/images/pocket-wallet-logo.png" alt="Pocket Wallet Logo" className="h-10" />
+            <div>
+              <div className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Pocket Wallet
+              </div>
+              <p className="text-xs text-text-secondary">Manage CKB independently with Nostr</p>
+            </div>
+          </div>
+
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2 text-sm text-text-secondary">
               <NodesIcon />
-              <span className="font-medium">{patchLightClientBigintType(connections)}</span>
+              <span className="font-medium">{patchLightClientBigintType(localNode?.connections)}</span>
             </div>
             <div className="group relative flex items-center gap-2 text-sm text-text-secondary">
               <SyncIcon isUpdating={isUpdatingPeers && truncatedPercentage < 100} />
@@ -42,10 +48,6 @@ export const Header = () => {
                 <div className="absolute top-0 right-8 -translate-y-1/2 rotate-45 w-2 h-2 bg-secondary border-t border-l border-border"></div>
               </div>
             </div>
-            <select className="bg-transparent text-primary px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-primary/20 hover:bg-secondary/30 border border-border/40 font-medium transition-colors cursor-pointer">
-              <option>Mainnet</option>
-              <option>Testnet</option>
-            </select>
 
             <div>
               <div className="flex flex-col items-center justify-center gap-2">

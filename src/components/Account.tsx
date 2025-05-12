@@ -36,7 +36,7 @@ export const Account = () => {
 
   return (
     <div className="rounded-xl shadow-lg border p-4 border-neutral-200 relative">
-      <div className="flex flex-col items-center gap-2 mb-6">
+      <div className="flex flex-col items-center mb-6">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mb-2">
           <ProfileImg imageUrl={profile?.picture} />
         </div>

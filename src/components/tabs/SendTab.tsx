@@ -118,7 +118,7 @@ export const SendTab: React.FC = () => {
       </div>
       <div className="mt-6">
         <h2 className="text-lg font-medium text-text-primary mb-6">Contacts</h2>
-        <div className="border p-2 flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+        <div className="border rounded-lg p-2 flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
           {followers.map((follower) => {
             const isSelected = selectedContactAddress === follower.ckbAddress;
             return (
