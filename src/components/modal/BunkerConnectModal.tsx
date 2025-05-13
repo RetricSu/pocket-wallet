@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
+import { useNip46BunkerStringListCache } from "../../hooks/useNip46BunkerStringListCache";
+import { Dustbin } from "../icons/dustbin";
+import { SmallClose } from "../icons/small-close";
+import { Close } from "../icons/close";
+import { Loading } from "../icons/loading";
 
 interface BunkerConnectModalProps {
   isOpen: boolean;
@@ -10,6 +15,8 @@ interface BunkerConnectModalProps {
 
 export const BunkerConnectModal: React.FC<BunkerConnectModalProps> = ({ isOpen, onClose, onConnect, isLoading }) => {
   const [bunkerString, setBunkerString] = useState("");
+  const { nip46BunkerStringListCache, addBunkerString, removeBunkerString } = useNip46BunkerStringListCache();
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Lock body scroll when modal is open
   React.useEffect(() => {
@@ -38,59 +45,137 @@ export const BunkerConnectModal: React.FC<BunkerConnectModalProps> = ({ isOpen, 
     }
   };
 
+  const handleSelectBunkerString = (cachedBunkerString: string, index: number) => {
+    setBunkerString(cachedBunkerString);
+    setSelectedIndex(index);
+  };
+
   // If modal is not open, don't render anything
   if (!isOpen) return null;
 
   const modalContent = (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
       onClick={onClose}
       style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
     >
-      <div className="bg-background rounded-lg p-6 max-w-md w-full relative" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-text-primary">Connect to Remote Bunker Signer</h2>
-          <button onClick={onClose} className="text-text-secondary hover:text-text-primary">
-            ✕
+      <div
+        className="bg-background rounded-xl p-6 max-w-md w-full relative shadow-xl border border-neutral-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-text-primary">Connect to Remote Bunker Signer</h2>
+          <button
+            onClick={onClose}
+            className="text-text-secondary hover:text-text-primary transition-colors p-2 rounded-full hover:bg-neutral-100"
+          >
+            <Close />
           </button>
+        </div>
+        <div className="text-sm text-text-secondary mb-6">
+          What is a this?{" "}
+          <a
+            className="text-primary"
+            href="https://github.com/nostr-protocol/nips/blob/master/46.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+          </a>
+          {" and check out "}
+          <a className="text-primary" href="https://nsec.app/" target="_blank" rel="noopener noreferrer">
+            nsec.app
+          </a>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="bunkerString" className="block text-sm font-medium text-text-secondary mb-2">
-              Nostr Bunker Connection String
-            </label>
-            <input
-              id="bunkerString"
-              type="text"
-              value={bunkerString}
-              onChange={(e) => setBunkerString(e.target.value)}
-              placeholder="Enter your Bunker URL string"
-              className="w-full py-2 px-3 rounded-lg border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
+            <div className="relative">
+              <input
+                id="bunkerString"
+                type="text"
+                value={bunkerString}
+                onChange={(e) => setBunkerString(e.target.value)}
+                placeholder="Enter your Bunker URL string"
+                className="w-full py-3 px-4 rounded-lg border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-12 transition-all"
+              />
+              {bunkerString && (
+                <button
+                  onClick={() => setBunkerString("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                >
+                  <SmallClose />
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="flex justify-end space-x-4 mt-6">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
+          <div className="w-full flex justify-center space-x-4">
             <button
               onClick={handleConnect}
-              className={`px-4 py-2 text-sm font-medium rounded transition-colors ${
+              className={`w-full px-6 py-3 text-sm font-medium rounded-lg transition-all ${
                 isLoading
                   ? "bg-neutral-300 text-neutral-700 cursor-not-allowed"
-                  : "bg-primary text-white hover:bg-primary/90"
+                  : "bg-primary text-white hover:bg-primary/90 shadow-md hover:shadow-lg"
               }`}
               disabled={isLoading || !bunkerString.trim()}
             >
-              {isLoading ? "Connecting..." : "Connect"}
+              {isLoading ? (
+                <span className="flex items-center">
+                  <Loading />
+                  Connecting...
+                </span>
+              ) : (
+                "Connect"
+              )}
             </button>
           </div>
         </div>
+
+        {nip46BunkerStringListCache && nip46BunkerStringListCache.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-neutral-200">
+            <p className="text-sm font-medium text-text-primary mb-3">
+              Saved Connections{" "}
+              <span className="text-xs font-normal text-text-secondary ml-1">
+                ({nip46BunkerStringListCache.length})
+              </span>
+            </p>
+            <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1">
+              {nip46BunkerStringListCache.map((cachedBunkerString, index) => (
+                <div
+                  key={cachedBunkerString}
+                  className={`flex items-center cursor-pointer rounded-lg border transition-all 
+                    ${
+                      selectedIndex === index
+                        ? "border-primary/50 bg-primary/5"
+                        : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
+                    }`}
+                  onClick={() => handleSelectBunkerString(cachedBunkerString, index)}
+                >
+                  <div className="flex-grow p-3 truncate" title={cachedBunkerString}>
+                    <span className="text-sm text-text-secondary">{cachedBunkerString}</span>
+                  </div>
+                  <div className="flex items-center pr-2">
+                    <button
+                      className="text-xs font-medium p-1.5 rounded text-red-500 hover:bg-red-50 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeBunkerString(cachedBunkerString);
+                        if (selectedIndex === index) {
+                          setSelectedIndex(null);
+                          setBunkerString("");
+                        }
+                      }}
+                      aria-label="Remove connection"
+                    >
+                      <Dustbin />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

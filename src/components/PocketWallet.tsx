@@ -12,7 +12,7 @@ import { SendIcon } from "./icons/send";
 import { ReceiveIcon } from "./icons/receive";
 import { NetworkIcon } from "./icons/network";
 import { NavigationProvider } from "../contexts";
-import { Account } from "./Account";
+import { Account } from "./account";
 
 const tabItems: TabItem[] = [
   {
