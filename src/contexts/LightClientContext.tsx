@@ -6,6 +6,7 @@ import configRaw from "../lib/config.toml";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { APP_CONFIG } from "../lib/app-config";
 import { Hex } from "@ckb-ccc/core";
+import { BigLoading } from "../components/common/BigLoading";
 
 export interface LightClientContextType {
   client: LightClientPublicTestnet;
@@ -160,7 +161,7 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   // Ensure client is available before providing context
   if (!clientRef.current || !isClientReady || !isClientStarted) {
-    return <div>Loading light client...</div>; // Show a loading indicator
+    return <BigLoading title="Initializing Wallet" description="Loading wasm light client in the background..." />;
   }
 
   return (
