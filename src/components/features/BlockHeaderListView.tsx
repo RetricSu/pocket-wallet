@@ -50,7 +50,7 @@ export const BlockHeaderListView = () => {
   return (
     <div className="w-full mb-6">
       <div className="flex justify-between items-center align-middle my-4">
-        <div className="font-medium text-text-primary">Local Stored Headers({headers.length})</div>
+        <h3 className="text-lg font-medium text-text-primary mb-4">Local Stored Headers({headers.length})</h3>
       </div>
 
       <div className="overflow-x-auto text-sm">
@@ -107,7 +107,6 @@ export const BlockHeaderListView = () => {
           )}
         </div>
       </div>
-      <hr className="border-border/20" />
     </div>
   );
 };

@@ -25,13 +25,14 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
   };
 
   return (
-    <div className="mb-2">
-      <div>
-        <div className="flex justify-start gap-2 items-center align-middle">
-          <img src="/images/pocket-wallet-logo.png" className="w-20" />
+    <div className="max-w-5xl mx-auto space-y-8 pb-8">
+      {/* Header Section */}
+      <div className="bg-bg-secondary/30 rounded-lg p-6 border border-border/20">
+        <div className="flex items-center gap-4 mb-4">
+          <img src="/images/pocket-wallet-logo.png" className="w-16" alt="Pocket Wallet Logo" />
           <h2 className="text-xl font-medium text-text-primary">We Love Client-Side-Validation!</h2>
         </div>
-        <div className="text-text-secondary text-sm p-2">
+        <div className="text-text-secondary text-sm">
           <p>
             CKB is a public blockchain based on POW and UTXO-like data structure. Pocket Wallet use CKB Light Client to
             sync the blockchain right in your browser without relying on any centralized RPC service. By integrating
@@ -41,87 +42,87 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
         </div>
       </div>
 
-      <div className="my-4">
-        <div className="text-md font-medium">Wasm Light Client Status</div>
-        <div className="p-2 text-sm flex justify-start gap-10">
-          <div>
-            <div className="flex justify-start gap-6">
-              <div>
-                <span className="text-text-primary">Active: </span>
-                <span className="text-primary">{localNode?.active ? "Yes" : "No"}</span>
-              </div>
-              <div>
-                <span className="text-text-primary">Light Client Version: </span>
-                <span className="text-primary">{localNode?.version}</span>
-              </div>
+      {/* Light Client Status Section */}
+      <div className="bg-bg-secondary/30 rounded-lg p-6 border border-border/20">
+        <h3 className="text-lg font-medium text-text-primary mb-4">Wasm Light Client Status</h3>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-text-secondary font-medium w-32">Active:</span>
+              <span className="text-primary font-medium">{localNode?.active ? "Yes" : "No"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-text-secondary font-medium w-32">Client Version:</span>
+              <span className="text-primary">{localNode?.version}</span>
             </div>
             <div>
-              <span className="text-text-primary">NodeId: </span>
-              <span className="text-primary">{localNode?.nodeId}</span>
+              <span className="text-text-secondary font-medium block mb-1">NodeId:</span>
+              <span className="text-primary text-sm break-all">{localNode?.nodeId}</span>
             </div>
-            <div className="max-w-[400px] overflow-x-scroll whitespace-nowrap">
-              <span className="text-text-primary">Protocol: </span>
-              <span className="text-primary">
+            <div>
+              <span className="text-text-secondary font-medium block mb-1">Protocol:</span>
+              <div className="text-primary text-sm overflow-x-auto">
                 {JSON.stringify(localNode?.protocols.map((protocol) => protocol.name))}
-              </span>
+              </div>
             </div>
           </div>
-          <div>
+
+          <div className="space-y-3">
             <div>
-              <span className="text-text-primary">Tip Block Number: </span>
-              <span className="text-primary">
-                <a
-                  href={`https://testnet.explorer.nervos.org/block/${patchLightClientBigintType(tipBlockNumber)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary-hover"
-                >
-                  {patchLightClientBigintType(tipBlockNumber)}
-                </a>
-              </span>
+              <span className="text-text-secondary font-medium block mb-1">Tip Block Number:</span>
+              <a
+                href={`https://testnet.explorer.nervos.org/block/${patchLightClientBigintType(tipBlockNumber)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-hover"
+              >
+                {patchLightClientBigintType(tipBlockNumber)}
+              </a>
             </div>
             <div>
-              <span className="text-text-primary">Synced Block Number: </span>
-              <span className="text-primary">
-                <a
-                  href={`https://testnet.explorer.nervos.org/block/${patchLightClientBigintType(syncedBlockNumber)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary-hover"
-                >
-                  {patchLightClientBigintType(syncedBlockNumber)}
-                </a>
-              </span>
+              <span className="text-text-secondary font-medium block mb-1">Synced Block Number:</span>
+              <a
+                href={`https://testnet.explorer.nervos.org/block/${patchLightClientBigintType(syncedBlockNumber)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-hover"
+              >
+                {patchLightClientBigintType(syncedBlockNumber)}
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      <hr className="border-border/20" />
-
-      <div className="my-4">
-        <span className="text-text-primary font-medium">Connected Peers</span>
-        <span className="text-primary">({Array.isArray(peers) ? peers.length : 0})</span>
-        <div className="mt-2 overflow-x-auto">
-          <table className="min-w-full divide-y divide-border/20">
+      {/* Connected Peers Section */}
+      <div className="bg-bg-secondary/30 rounded-lg p-6 border border-border/20">
+        <div className="flex items-center gap-2 mb-4">
+          <h3 className="text-lg font-medium text-text-primary">
+            Connected Peers({Array.isArray(peers) ? peers.length : 0})
+          </h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full divide-y divide-border/20">
             <thead>
-              <tr className="text-left text-sm font-medium text-text-primary">
+              <tr className="text-left text-sm font-medium text-text-secondary">
                 <th className="px-4 py-2">Node ID</th>
-                <th className="px-4 py-2">Duration</th>
+                <th className="px-4 py-2 w-24 text-right">Duration</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/20">
               {Array.isArray(peers) && peers.length > 0 ? (
                 peers.map((peer, idx: number) => (
                   <tr key={idx} className="text-sm text-text-primary hover:bg-white/5">
-                    <td className="px-4 py-2 font-mono">{peer.nodeId}</td>
-                    <td className="px-4 py-2">{Math.floor(Number(peer.connestedDuration) / 1000 / 60)} min</td>
+                    <td className="px-4 py-2 font-mono text-xs">{peer.nodeId}</td>
+                    <td className="px-4 py-2 text-right">
+                      {Math.floor(Number(peer.connestedDuration) / 1000 / 60)} min
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan={2} className="px-4 py-2 text-center text-text-secondary">
-                    No peers
+                    No peers connected
                   </td>
                 </tr>
               )}
@@ -129,44 +130,48 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
           </table>
         </div>
       </div>
-      <hr className="border-border/20" />
 
-      <BlockHeaderListView />
+      {/* Block Header List View */}
+      <div className="bg-bg-secondary/30 rounded-lg p-6 border border-border/20">
+        <BlockHeaderListView />
+      </div>
 
-      <div className="my-6">
-        <div className="flex flex-col space-y-4">
+      {/* Scripts Section */}
+      <div className="bg-bg-secondary/30 rounded-lg p-6 border border-border/20">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col">
+            <h3 className="text-lg font-medium text-text-primary">Scripts</h3>
+            <p className="text-text-secondary text-sm">Scripts allow light client to find interesting data it wants</p>
+          </div>
           <button
-            className="btn w-fit border border-border/40 px-4 py-2 rounded-lg bg-primary text-secondary hover:bg-primary/80"
+            className="px-4 py-2 rounded-lg bg-primary text-secondary hover:bg-primary/80 text-sm font-medium"
             onClick={handleGetScriptStatus}
             disabled={isLoading}
           >
             {isLoading ? "Loading..." : "Get Scripts"}
           </button>
+        </div>
 
-          <div className="mt-2 p-4 rounded bg-bg-secondary/30 border border-border/20 max-h-[300px] overflow-auto">
-            {scriptStatus ? (
-              <pre className="text-sm text-text-primary font-mono whitespace-pre-wrap">
-                {JSON.stringify(
-                  scriptStatus.map((script) => {
-                    return {
-                      scriptType: script.scriptType,
-                      script: script.script,
-                      blockNumber: script.blockNumber.toString(10),
-                    };
-                  }),
-                  null,
-                  2,
-                )}
-              </pre>
-            ) : (
-              <p className="text-text-secondary text-sm">Click "Get Scripts" to view the scripts data</p>
-            )}
-          </div>
+        <div className="bg-bg-secondary/50 border border-border/20 rounded-lg p-4 max-h-[300px] overflow-auto">
+          {scriptStatus ? (
+            <pre className="text-xs text-text-primary font-mono whitespace-pre-wrap">
+              {JSON.stringify(
+                scriptStatus.map((script) => {
+                  return {
+                    scriptType: script.scriptType,
+                    script: script.script,
+                    blockNumber: script.blockNumber.toString(10),
+                  };
+                }),
+                null,
+                2,
+              )}
+            </pre>
+          ) : (
+            <p className="text-text-secondary text-sm text-center py-4">Click "Get Scripts" to view</p>
+          )}
         </div>
       </div>
-
-      <br />
-      <br />
     </div>
   );
 };
