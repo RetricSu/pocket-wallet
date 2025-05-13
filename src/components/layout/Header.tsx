@@ -83,7 +83,7 @@ export const Header = () => {
               <div className="flex flex-col items-center justify-center gap-2">
                 <a
                   className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors font-medium"
-                  href="https://github.com/ckb-devrel/ccc"
+                  href="https://github.com/RetricSu/pocket-wallet"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
