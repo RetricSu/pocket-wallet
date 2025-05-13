@@ -4,20 +4,7 @@ import { useLightClient } from "../../contexts";
 import { useNostrSigner } from "../../contexts";
 import { nostrService, ProfileInfo } from "../../services/nostr";
 import { ProfileImg } from "../common/ProfileImg";
-
-// Define keyframes for the animation
-const fadeInDownAnimation = `
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`;
+import { Notification } from "../common/Notification";
 
 export const SendTab: React.FC = () => {
   const { signer, isConnected, nostrPublicKey } = useNostrSigner();
@@ -102,35 +89,15 @@ export const SendTab: React.FC = () => {
 
   return (
     <div className="max-w-xl mx-auto relative">
-      <style dangerouslySetInnerHTML={{ __html: fadeInDownAnimation }} />
       {sendStatus === "success" && (
-        <div
-          className="absolute top-0 left-0 right-0 bg-green-500/90 text-white py-3 px-4 rounded-lg shadow-lg flex items-center justify-between mb-4 z-10"
-          style={{ animation: "fadeInDown 0.5s ease-in-out" }}
-        >
-          <div className="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Transaction successful!</span>
-          </div>
-          <a
-            className="underline hover:text-white/80 ml-2 text-sm flex items-center"
-            href={`https://testnet.explorer.nervos.org/transaction/${txHash}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View on Explorer
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-              <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-            </svg>
-          </a>
-        </div>
+        <Notification
+          type="success"
+          message="Transaction successful!"
+          actionLink={{
+            text: "View on Explorer",
+            url: `https://testnet.explorer.nervos.org/transaction/${txHash}`,
+          }}
+        />
       )}
 
       <h2 className="text-lg font-medium text-text-primary mb-6">Send CKB</h2>
