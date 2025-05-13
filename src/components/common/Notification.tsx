@@ -82,42 +82,38 @@ export const Notification: React.FC<NotificationProps> = ({ type, message, actio
   };
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: fadeInDownAnimation }} />
-      <div
-        className={`absolute top-0 left-0 right-0 ${bgColors[type]} text-white py-3 px-4 rounded-lg shadow-lg flex items-center justify-between mb-4 z-10`}
-        style={{ animation: "fadeInDown 0.5s ease-in-out" }}
-      >
-        <div className="flex items-center">
-          {renderIcon()}
-          <span>{message}</span>
-        </div>
-        {actionLink && (
-          <a
-            className="underline hover:text-white/80 ml-2 text-sm flex items-center"
-            href={actionLink.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {actionLink.text}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-              <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-            </svg>
-          </a>
-        )}
-        {onClose && (
-          <button onClick={onClose} className="ml-2 text-white hover:text-white/80" aria-label="Close notification">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        )}
+    <div
+      className={`absolute top-0 left-0 right-0 ${bgColors[type]} text-white py-3 px-4 rounded-lg shadow-lg flex items-center justify-between mb-4 z-10 animate-fadeInDown`}
+    >
+      <div className="flex items-center">
+        {renderIcon()}
+        <span>{message}</span>
       </div>
-    </>
+      {actionLink && (
+        <a
+          className="underline hover:text-white/80 ml-2 text-sm flex items-center"
+          href={actionLink.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {actionLink.text}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+          </svg>
+        </a>
+      )}
+      {onClose && (
+        <button onClick={onClose} className="ml-2 text-white hover:text-white/80" aria-label="Close notification">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fillRule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      )}
+    </div>
   );
 };
