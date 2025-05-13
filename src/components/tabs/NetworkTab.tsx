@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLightClient } from "../../contexts";
 import { patchLightClientBigintType } from "../../utils/stringUtils";
 import { ScriptStatus } from "ckb-light-client-js";
-import { BlockHeaderListView } from "../BlockHeaderListView";
+import { BlockHeaderListView } from "../features/BlockHeaderListView";
 
 interface NetworkTabProps {}
 

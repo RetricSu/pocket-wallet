@@ -10,7 +10,7 @@ import { nostrService } from "../services/nostr";
 import { createNip46Signer } from "../lib/ccc/Nip46";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { APP_CONFIG } from "../lib/app-config";
-import { BunkerConnectModal } from "./BunkerConnectModal";
+import { BunkerConnectModal } from "./modal/BunkerConnectModal";
 
 // Define login method types
 type LoginMethod = {

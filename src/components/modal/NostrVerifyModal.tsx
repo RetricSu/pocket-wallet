@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { bytesTo, NostrEvent, Transaction, WitnessArgs } from "@ckb-ccc/core";
 import { verifyEvent } from "nostr-tools";
 import ReactDOM from "react-dom";
-import { formatCKBBalance } from "../utils/stringUtils";
+import { formatCKBBalance } from "../../utils/stringUtils";
 
 interface NostrVerifyModalProps {
   isOpen: boolean;

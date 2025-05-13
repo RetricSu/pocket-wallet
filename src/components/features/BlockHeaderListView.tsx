@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLightClient, useNostrSigner } from "../contexts";
+import { useLightClient, useNostrSigner } from "../../contexts";
 import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
 import { ClientBlockHeader } from "@ckb-ccc/core/barrel";
 
@@ -88,7 +88,7 @@ export const BlockHeaderListView = () => {
                   disabled={currentPage === 1}
                   className="px-3 py-1 rounded disabled:opacity-50"
                 >
-                  上一页
+                  Previous
                 </button>
 
                 <span className="px-4 py-1">
@@ -100,7 +100,7 @@ export const BlockHeaderListView = () => {
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 rounded disabled:opacity-50"
                 >
-                  下一页
+                  Next
                 </button>
               </nav>
             </div>

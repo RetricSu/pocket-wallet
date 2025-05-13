@@ -1,10 +1,11 @@
-import { useLightClient } from "../contexts";
-import { NodesIcon } from "./icons/nodes";
-import { SyncIcon } from "./icons/sync";
-import { patchLightClientBigintType } from "../utils/stringUtils";
+import { useLightClient } from "../../contexts";
+import { NodesIcon } from "../icons/nodes";
+import { SyncIcon } from "../icons/sync";
+import { patchLightClientBigintType } from "../../utils/stringUtils";
 
 export const Header = () => {
   const {
+    client,
     tipBlockNumber,
     syncedBlockNumber,
     localNode,
@@ -31,6 +32,7 @@ export const Header = () => {
           </div>
 
           <div className="flex items-center gap-6">
+            <div className="text-sm text-text-secondary">CKB {client.networkType}</div>
             <div className="group relative flex items-center gap-2 text-sm text-text-secondary">
               <NodesIcon />
               <span className="font-medium">{patchLightClientBigintType(localNode?.connections)}</span>
