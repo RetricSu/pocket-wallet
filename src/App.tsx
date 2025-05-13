@@ -1,5 +1,4 @@
-import React from "react";
-import { NostrWallet } from "./components/NostrWallet";
+import { PocketWallet } from "./components/PocketWallet";
 import { LightClientProvider } from "./contexts";
 import { NostrSignerProvider } from "./contexts/SignerContext";
 
@@ -8,7 +7,7 @@ function App() {
     <div className="font-sans bg-background text-text-primary min-h-screen">
       <LightClientProvider>
         <NostrSignerProvider>
-          <NostrWallet />
+          <PocketWallet />
         </NostrSignerProvider>
       </LightClientProvider>
     </div>

@@ -1,10 +1,11 @@
-import { useLightClient } from "../contexts";
-import { NodesIcon } from "./icons/nodes";
-import { SyncIcon } from "./icons/sync";
-import { patchLightClientBigintType } from "../utils/stringUtils";
+import { useLightClient } from "../../contexts";
+import { NodesIcon } from "../icons/nodes";
+import { SyncIcon } from "../icons/sync";
+import { patchLightClientBigintType } from "../../utils/stringUtils";
 
 export const Header = () => {
   const {
+    client,
     tipBlockNumber,
     syncedBlockNumber,
     localNode,
@@ -31,6 +32,7 @@ export const Header = () => {
           </div>
 
           <div className="flex items-center gap-6">
+            <div className="text-sm text-text-secondary">CKB {client.networkType}</div>
             <div className="group relative flex items-center gap-2 text-sm text-text-secondary">
               <NodesIcon />
               <span className="font-medium">{patchLightClientBigintType(localNode?.connections)}</span>
@@ -81,7 +83,7 @@ export const Header = () => {
               <div className="flex flex-col items-center justify-center gap-2">
                 <a
                   className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors font-medium"
-                  href="https://github.com/ckb-devrel/ccc"
+                  href="https://github.com/RetricSu/pocket-wallet"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

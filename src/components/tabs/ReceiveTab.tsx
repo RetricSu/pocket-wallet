@@ -16,9 +16,12 @@ export const ReceiveTab: React.FC<ReceiveTabProps> = ({}) => {
           <div className="w-48 h-48 mx-auto bg-white rounded-lg mb-6 shadow-lg p-2">
             <QRCodeSVG value={recommendedAddress || ""} size={176} level="H" marginSize={0} />
           </div>
+          <CopyButton
+            className="text-primary break-all mb-4"
+            textToCopy={recommendedAddress || ""}
+            defaultMessage={recommendedAddress || ""}
+          />
           <p className="text-sm text-text-primary mb-3">Your CKB Address</p>
-          <p className="text-primary break-all mb-4">{recommendedAddress}</p>
-          <CopyButton textToCopy={recommendedAddress || ""} defaultMessage="Copy Address" />
         </div>
       </div>
     </div>

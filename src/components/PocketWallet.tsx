@@ -1,6 +1,6 @@
 import React from "react";
-import { Header } from "./Header";
-import { Sidebar, TabItem } from "./Sidebar";
+import { Header } from "./layout/Header";
+import { SideNav, TabItem } from "./layout/SideNav";
 import { AssetsTab } from "./tabs/AssetsTab";
 import { ActivityTab } from "./tabs/ActivityTab";
 import { SendTab } from "./tabs/SendTab";
@@ -12,6 +12,7 @@ import { SendIcon } from "./icons/send";
 import { ReceiveIcon } from "./icons/receive";
 import { NetworkIcon } from "./icons/network";
 import { NavigationProvider } from "../contexts";
+import { Account } from "./account";
 
 const tabItems: TabItem[] = [
   {
@@ -46,12 +47,12 @@ const tabItems: TabItem[] = [
   },
 ];
 
-export const NostrWallet: React.FC = () => {
+export const PocketWallet: React.FC = () => {
   return (
     <NavigationProvider defaultActiveId="assets">
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <Sidebar items={tabItems} />
+        <SideNav items={tabItems} customHeader={<Account />} />
       </div>
     </NavigationProvider>
   );

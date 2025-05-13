@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { bytesTo, NostrEvent, Transaction, WitnessArgs } from "@ckb-ccc/core";
 import { verifyEvent } from "nostr-tools";
 import ReactDOM from "react-dom";
-import { formatCKBBalance } from "../utils/stringUtils";
+import { formatCKBBalance } from "../../utils/stringUtils";
+import { Notification } from "../common/Notification";
 
 interface NostrVerifyModalProps {
   isOpen: boolean;
@@ -100,13 +101,11 @@ export const NostrVerifyModal: React.FC<NostrVerifyModalProps> = ({ isOpen, onCl
 
         {/* Floating notification */}
         {showNotification && verificationStatus && (
-          <div
-            className={`absolute left-0 right-0 mx-6 py-2 px-4 rounded transition-opacity duration-300 ${
-              verificationStatus.success ? "bg-green-600 text-black" : "bg-red-600 text-black"
-            }`}
-            style={{ top: "3.5rem" }}
-          >
-            <p className="text-sm font-medium">{verificationStatus.message}</p>
+          <div className="absolute left-0 right-0 mx-6" style={{ top: "3.5rem" }}>
+            <Notification
+              type={verificationStatus.success ? "success" : "error"}
+              message={verificationStatus.message}
+            />
           </div>
         )}
 

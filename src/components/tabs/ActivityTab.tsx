@@ -3,7 +3,7 @@ import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
 import React, { useEffect, useState } from "react";
 import { useLightClient, useNostrSigner } from "../../contexts";
 import { formatCKBBalanceChange } from "../../utils/stringUtils";
-import { NostrVerifyModal } from "../NostrVerifyModal";
+import { NostrVerifyModal } from "../modal/NostrVerifyModal";
 
 export interface DisplayTransaction {
   txHash: Hex;

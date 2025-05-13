@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLightClient, useNostrSigner } from "../contexts";
+import { useLightClient, useNostrSigner } from "../../contexts";
 import { ClientCollectableSearchKeyLike } from "@ckb-ccc/core/advanced";
 import { ClientBlockHeader } from "@ckb-ccc/core/barrel";
 
@@ -50,7 +50,7 @@ export const BlockHeaderListView = () => {
   return (
     <div className="w-full mb-6">
       <div className="flex justify-between items-center align-middle my-4">
-        <div className="font-medium text-text-primary">Local Stored Headers({headers.length})</div>
+        <h3 className="text-lg font-medium text-text-primary mb-4">Local Stored Headers({headers.length})</h3>
       </div>
 
       <div className="overflow-x-auto text-sm">
@@ -88,7 +88,7 @@ export const BlockHeaderListView = () => {
                   disabled={currentPage === 1}
                   className="px-3 py-1 rounded disabled:opacity-50"
                 >
-                  上一页
+                  Previous
                 </button>
 
                 <span className="px-4 py-1">
@@ -100,14 +100,13 @@ export const BlockHeaderListView = () => {
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 rounded disabled:opacity-50"
                 >
-                  下一页
+                  Next
                 </button>
               </nav>
             </div>
           )}
         </div>
       </div>
-      <hr className="border-border/20" />
     </div>
   );
 };
