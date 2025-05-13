@@ -18,7 +18,7 @@ export type SignInMethodCache = {
 export const SignIn = () => {
   const { setSigner } = useNostrSigner();
   const { client } = useLightClient();
-  const { nip46BunkerStringListCache, addBunkerString, removeBunkerString } = useNip46BunkerStringListCache();
+  const { addBunkerString, isBunkerStringInCache } = useNip46BunkerStringListCache();
 
   const [nip46SecretKeyCache, setNip46SecretKeyCache] = useLocalStorage<string | null>(
     APP_CONFIG.nip46BunkerSecretKeyName,
@@ -61,10 +61,9 @@ export const SignIn = () => {
       }
 
       const signer = createNip46Signer(client, nip46SecretKey);
-      const isBunkerStringInCache = nip46BunkerStringListCache?.includes(bunkerString);
       if (isAutoConnect) {
         await signer.reconnectToBunker(bunkerString);
-      } else if (isBunkerStringInCache) {
+      } else if (isBunkerStringInCache(bunkerString)) {
         // this is a familiar bunker string, so we can reconnect to it
         await signer.reconnectToBunker(bunkerString);
       } else {

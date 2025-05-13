@@ -141,38 +141,54 @@ export const BunkerConnectModal: React.FC<BunkerConnectModalProps> = ({ isOpen, 
               </span>
             </p>
             <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1">
-              {nip46BunkerStringListCache.map((cachedBunkerString, index) => (
-                <div
-                  key={cachedBunkerString}
-                  className={`flex items-center cursor-pointer rounded-lg border transition-all 
-                    ${
-                      selectedIndex === index
-                        ? "border-primary/50 bg-primary/5"
-                        : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
-                    }`}
-                  onClick={() => handleSelectBunkerString(cachedBunkerString, index)}
-                >
-                  <div className="flex-grow p-3 truncate" title={cachedBunkerString}>
-                    <span className="text-sm text-text-secondary">{cachedBunkerString}</span>
+              {nip46BunkerStringListCache.map((entry, index) => {
+                // Format the date for display
+                const date = new Date(entry.createdAt);
+                const formattedDate = `${date.toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                })} ${date.toLocaleTimeString(undefined, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}`;
+
+                return (
+                  <div
+                    key={entry.bunkerString}
+                    className={`flex items-center cursor-pointer rounded-lg border transition-all 
+                      ${
+                        selectedIndex === index
+                          ? "border-primary/50 bg-primary/5"
+                          : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
+                      }`}
+                    onClick={() => handleSelectBunkerString(entry.bunkerString, index)}
+                  >
+                    <div className="flex-grow p-3 truncate">
+                      <div className="flex justify-start items-center align-middle gap-2">
+                        <span className="text-sm text-text-secondary">{formattedDate}</span>
+                        <span className="text-sm text-text-tertiary truncate">{entry.bunkerString}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center pr-2">
+                      <button
+                        className="text-xs font-medium p-1.5 rounded text-red-500 hover:bg-red-50 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeBunkerString(entry.bunkerString);
+                          if (selectedIndex === index) {
+                            setSelectedIndex(null);
+                            setBunkerString("");
+                          }
+                        }}
+                        aria-label="Remove connection"
+                      >
+                        <Dustbin />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center pr-2">
-                    <button
-                      className="text-xs font-medium p-1.5 rounded text-red-500 hover:bg-red-50 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeBunkerString(cachedBunkerString);
-                        if (selectedIndex === index) {
-                          setSelectedIndex(null);
-                          setBunkerString("");
-                        }
-                      }}
-                      aria-label="Remove connection"
-                    >
-                      <Dustbin />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
