@@ -114,13 +114,18 @@ export const LightClientProvider: React.FC<{ children: ReactNode }> = ({ childre
   }, []);
 
   const updateSyncStatus = useCallback(async () => {
+    if (clientRef.current == null) {
+      console.warn("[updateSyncStatus] light client is not initialized");
+      return;
+    }
+
     console.log("[updateSyncStatus] updating sync status...");
     try {
       const [peers, localNodeInfo, tipHeader, scriptStatus] = await Promise.all([
-        clientRef.current!.lightClient.getPeers(),
-        clientRef.current!.lightClient.localNodeInfo(),
-        clientRef.current!.lightClient.getTipHeader(),
-        clientRef.current!.lightClient.getScripts(),
+        clientRef.current.lightClient.getPeers(),
+        clientRef.current.lightClient.localNodeInfo(),
+        clientRef.current.lightClient.getTipHeader(),
+        clientRef.current.lightClient.getScripts(),
       ]);
 
       // clean old data before setting new data
