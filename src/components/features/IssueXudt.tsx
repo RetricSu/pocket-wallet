@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useLightClient, useNostrSigner } from "../../contexts";
 import { ccc } from "@ckb-ccc/core";
+import { Notification } from "../common/Notification";
 
 export interface IssueXudtProps {
   isOpen: boolean;
@@ -11,6 +12,20 @@ export interface IssueXudtProps {
 export const IssueXudt = ({ isOpen, onClose }: IssueXudtProps) => {
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
+
+  // Effect to handle notification display and auto-hide
+  useEffect(() => {
+    if (notification) {
+      setShowNotification(true);
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -39,6 +54,10 @@ export const IssueXudt = ({ isOpen, onClose }: IssueXudtProps) => {
   const handleIssue = async () => {
     if (!signer || !recommendedAddressObj) {
       console.error("No signer or recommended address");
+      setNotification({
+        type: "error",
+        message: "No signer or recommended address available",
+      });
       return;
     }
 
@@ -71,8 +90,17 @@ export const IssueXudt = ({ isOpen, onClose }: IssueXudtProps) => {
 
       const txHash = await signer.sendTransaction(tx);
       console.log("Transaction sent:", txHash);
+
+      setNotification({
+        type: "success",
+        message: `Token issued successfully! Transaction: ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
+      });
     } catch (error) {
       console.error("Error issuing token:", error);
+      setNotification({
+        type: "error",
+        message: `Failed to issue token: ${error instanceof Error ? error.message : String(error)}`,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -99,6 +127,13 @@ export const IssueXudt = ({ isOpen, onClose }: IssueXudtProps) => {
             </svg>
           </button>
         </div>
+
+        {/* Floating notification */}
+        {showNotification && notification && (
+          <div className="absolute left-0 right-0 mx-6" style={{ top: "3.5rem" }}>
+            <Notification type={notification.type} message={notification.message} onClose={onClose} />
+          </div>
+        )}
 
         <div className="space-y-4">
           <div className="text-sm text-text-secondary">Token Standard: XUDT</div>
