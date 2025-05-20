@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ccc } from "@ckb-ccc/core";
 import { useLightClient, useNostrSigner, useNavigation } from "../../contexts";
+import { IssueXudt } from "../features/IssueXudt";
 
 interface AssetsTabProps {}
 
@@ -11,6 +12,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [balance, setBalance] = useState<bigint | null>(null);
+  const [isIssueXudtModalOpen, setIsIssueXudtModalOpen] = useState<boolean>(false);
 
   // Helper function to format large numbers
   const formatBalance = (balance: bigint | null): string => {
@@ -89,15 +91,28 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
       <div className="mb-10">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-text-primary">Your Assets</h2>
-          <button
-            className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5"
-            onClick={() => alert("Feature coming soon")}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            Issue Token
-          </button>
+          <div className="flex">
+            <div className="flex gap-2">
+              <button
+                className="text-primary hover:text-secondary transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/30 hover:bg-primary hover:border-primary"
+                onClick={() => setIsIssueXudtModalOpen(true)}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                Issue CKB Token
+              </button>
+              <button
+                className="text-primary hover:text-secondary transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/30 hover:bg-primary hover:border-primary"
+                onClick={() => alert("Feature coming soon")}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                Issue Nostr-Event Token
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-3">
@@ -126,6 +141,9 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
           )} */}
         </div>
       </div>
+
+      {/* IssueXudt Modal */}
+      <IssueXudt isOpen={isIssueXudtModalOpen} onClose={() => setIsIssueXudtModalOpen(false)} />
     </>
   );
 };
