@@ -3,6 +3,7 @@ import { ccc } from "@ckb-ccc/core";
 import { useLightClient, useNostrSigner, useNavigation } from "../../contexts";
 import { IssueXudt } from "../features/IssueXudt";
 import { PlusIcon } from "../icons/plus";
+import { AssetListItem } from "../common/AssetListItem";
 
 interface AssetsTabProps {}
 
@@ -107,28 +108,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
 
         <div className="space-y-3">
           {/* CKB Token */}
-          <div className="flex items-center justify-between p-5 bg-white/5 rounded-xl border border-border/10 hover:border-border/30 transition-all duration-200 cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/10">
-                <span className="text-white font-bold">CKB</span>
-              </div>
-              <div>
-                <p className="font-semibold text-text-primary">CKB</p>
-                <p className="text-sm text-text-secondary">Nervos CKB</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="font-semibold text-text-primary text-lg">{formatBalance(balance)}</p>
-              <p className="text-sm text-text-secondary">≈ $0.00</p>
-            </div>
-          </div>
-
-          {/* Empty state - uncomment if needed */}
-          {/* {(!balance || balance === 0n) && (
-            <div className="text-center py-10 text-text-secondary">
-              <p>No tokens found in your wallet</p>
-            </div>
-          )} */}
+          <AssetListItem assetItem={{ name: "CKB", description: "Nervos CKB", balance: formatBalance(balance) }} />
         </div>
       </div>
 
