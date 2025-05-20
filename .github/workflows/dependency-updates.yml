@@ -1,0 +1,48 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Every Monday at midnight
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+      
+      - name: Update dependencies
+        run: pnpm update --latest
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update dependencies'
+          title: 'chore: update dependencies'
+          body: |
+            This PR updates the project dependencies to their latest versions.
+            
+            This is an automated PR created by the dependency update workflow.
+          branch: dependency-updates
+          base: ${{ github.ref }}
+          delete-branch: true
+          labels: dependencies 

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ccc } from "@ckb-ccc/core";
 import { useLightClient, useNostrSigner, useNavigation } from "../../contexts";
+import { IssueXudt } from "../features/IssueXudt";
+import { PlusIcon } from "../icons/plus";
+import { AssetListItem } from "../common/AssetListItem";
 
 interface AssetsTabProps {}
 
@@ -11,6 +14,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [balance, setBalance] = useState<bigint | null>(null);
+  const [isIssueXudtModalOpen, setIsIssueXudtModalOpen] = useState<boolean>(false);
 
   // Helper function to format large numbers
   const formatBalance = (balance: bigint | null): string => {
@@ -89,43 +93,27 @@ export const AssetsTab: React.FC<AssetsTabProps> = () => {
       <div className="mb-10">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-text-primary">Your Assets</h2>
-          <button
-            className="text-primary hover:text-primary-hover transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5"
-            onClick={() => alert("Feature coming soon")}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            Issue Token
-          </button>
+          <div className="flex">
+            <div className="flex gap-2">
+              <button
+                className="text-primary hover:text-secondary transition-colors text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/30 hover:bg-primary hover:border-primary"
+                onClick={() => setIsIssueXudtModalOpen(true)}
+              >
+                <PlusIcon />
+                Issue CKB Token
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-3">
           {/* CKB Token */}
-          <div className="flex items-center justify-between p-5 bg-white/5 rounded-xl border border-border/10 hover:border-border/30 transition-all duration-200 cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/10">
-                <span className="text-white font-bold">CKB</span>
-              </div>
-              <div>
-                <p className="font-semibold text-text-primary">CKB</p>
-                <p className="text-sm text-text-secondary">Nervos CKB</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="font-semibold text-text-primary text-lg">{formatBalance(balance)}</p>
-              <p className="text-sm text-text-secondary">≈ $0.00</p>
-            </div>
-          </div>
-
-          {/* Empty state - uncomment if needed */}
-          {/* {(!balance || balance === 0n) && (
-            <div className="text-center py-10 text-text-secondary">
-              <p>No tokens found in your wallet</p>
-            </div>
-          )} */}
+          <AssetListItem assetItem={{ name: "CKB", description: "Nervos CKB", balance: formatBalance(balance) }} />
         </div>
       </div>
+
+      {/* IssueXudt Modal */}
+      <IssueXudt isOpen={isIssueXudtModalOpen} onClose={() => setIsIssueXudtModalOpen(false)} />
     </>
   );
 };
