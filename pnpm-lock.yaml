@@ -12,8 +12,8 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0(typescript@4.9.5)
       '@ckb-ccc/nip07':
-        specifier: ^1.0.16
-        version: 1.0.16(typescript@4.9.5)
+        specifier: ^1.0.18
+        version: 1.0.18(typescript@4.9.5)
       ckb-light-client-js:
         specifier: ^1.0.3
         version: 1.0.3(typescript@4.9.5)
@@ -863,14 +863,11 @@ packages:
   '@ckb-ccc/core@0.1.0-alpha.6':
     resolution: {integrity: sha512-w+OtRL3OU9pKEl09QlUWvWFi+qE2dTnPwp6bI6stPaALt14Ng9VvLyuN9TMnjUZEfzCqTV+4kKx5wlMS1P2v7Q==}
 
-  '@ckb-ccc/core@1.8.0':
-    resolution: {integrity: sha512-P6DGpyt7gYUSg+LUueNdSqPxueLMEisknJFa9XKhD/N3bT9Nmcy4YmOlZ1WoNsFxue26IzRz7uWCLh2YeQ4tBA==}
-
   '@ckb-ccc/core@1.9.0':
     resolution: {integrity: sha512-znKLUJ9rTThtkyUKykZXfNM+Pj1GqCrlhYwl3LZ2EZSPQnQLTD6OquWoEaXLQppgGQ3+GYGjl6ZZDJhu796mHA==}
 
-  '@ckb-ccc/nip07@1.0.16':
-    resolution: {integrity: sha512-qENAEGzfs/kRthq8RVjqZoGoa9zhEuWZv8CppXOkurZNV4HaInZ0JK+cwE+miVnMDQPS8aH+dI37OrR4ZKExhw==}
+  '@ckb-ccc/nip07@1.0.18':
+    resolution: {integrity: sha512-L4PZM+ocbpzQjcI3v5yb6WkpYz3gbh04vso6yuMB/JvEdnDrfUpR2k+e1dIjWVQwuVl5E2Bqu7s1rmtDOllqnQ==}
 
   '@craco/craco@7.1.0':
     resolution: {integrity: sha512-oRAcPIKYrfPXp9rSzlsDNeOaVtDiKhoyqSXUoqiK24jCkHr4T8m/a2f74yXIzCbIheoUWDOIfWZyRgFgT+cpqA==}
@@ -7052,28 +7049,6 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ckb-ccc/core@1.8.0(typescript@4.9.5)':
-    dependencies:
-      '@joyid/ckb': 1.1.2(typescript@4.9.5)
-      '@noble/ciphers': 0.5.3
-      '@noble/curves': 1.9.2
-      '@noble/hashes': 1.8.0
-      abort-controller: 3.0.0
-      bech32: 2.0.0
-      bitcoinjs-message: 2.2.0
-      bs58check: 4.0.0
-      buffer: 6.0.3
-      cross-fetch: 4.1.0
-      ethers: 6.14.4
-      isomorphic-ws: 5.0.0(ws@8.18.2)
-      ws: 8.18.2
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-      - zod
-
   '@ckb-ccc/core@1.9.0(typescript@4.9.5)':
     dependencies:
       '@joyid/ckb': 1.1.2(typescript@4.9.5)
@@ -7096,9 +7071,9 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ckb-ccc/nip07@1.0.16(typescript@4.9.5)':
+  '@ckb-ccc/nip07@1.0.18(typescript@4.9.5)':
     dependencies:
-      '@ckb-ccc/core': 1.8.0(typescript@4.9.5)
+      '@ckb-ccc/core': 1.9.0(typescript@4.9.5)
     transitivePeerDependencies:
       - bufferutil
       - encoding
