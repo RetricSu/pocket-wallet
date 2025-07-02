@@ -112,7 +112,16 @@ export const NetworkTab: React.FC<NetworkTabProps> = ({}) => {
               {Array.isArray(peers) && peers.length > 0 ? (
                 peers.map((peer, idx: number) => (
                   <tr key={idx} className="text-sm text-text-primary hover:bg-white/5">
-                    <td className="px-4 py-2 font-mono text-xs">{peer.nodeId}</td>
+                    <td className="px-4 py-2 font-mono text-xs">
+                      <a
+                        className="hover:text-primary-hover"
+                        href={`https://nodes.ckb.dev/?nodeId=${peer.nodeId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {peer.nodeId}
+                      </a>
+                    </td>
                     <td className="px-4 py-2 text-right">
                       {Math.floor(Number(peer.connestedDuration) / 1000 / 60)} min
                     </td>
