@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@ckb-ccc/core':
-        specifier: ^1.9.0
-        version: 1.9.0(typescript@4.9.5)
+        specifier: ^1.12.2
+        version: 1.12.2(typescript@4.9.5)
       '@ckb-ccc/nip07':
         specifier: ^1.0.29
         version: 1.0.29(typescript@4.9.5)
@@ -866,9 +866,6 @@ packages:
   '@ckb-ccc/core@1.12.2':
     resolution: {integrity: sha512-fiDn2ox4CWUF5hxTYxPDITnstbyZaPGK93OlO+Jlz7w0/zw64b9Y8tz+A0G29Q5s50nr9zT+aapEE4AbV01tuA==}
 
-  '@ckb-ccc/core@1.9.0':
-    resolution: {integrity: sha512-znKLUJ9rTThtkyUKykZXfNM+Pj1GqCrlhYwl3LZ2EZSPQnQLTD6OquWoEaXLQppgGQ3+GYGjl6ZZDJhu796mHA==}
-
   '@ckb-ccc/nip07@1.0.29':
     resolution: {integrity: sha512-D3g9aVKPDOkhahNT7QbdZF74l8wfDJKUD2E+KSZ/9Tfgv37fdWHiW1UfC3pxC3zAms+0Bl4ZGNaJQgJHFwhbhA==}
 
@@ -1169,10 +1166,6 @@ packages:
 
   '@noble/curves@1.2.0':
     resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
-
-  '@noble/curves@1.9.2':
-    resolution: {integrity: sha512-HxngEd2XUcg9xi20JkwlLCtYwfoFw4JGkuZpT+WlsPD4gB/cxkvTD8fSsoAnphGZhFdZYKeQIPCuFlWPm1uE0g==}
-    engines: {node: ^14.21.3 || >=16}
 
   '@noble/curves@1.9.7':
     resolution: {integrity: sha512-gbKGcRUYIjA3/zCCNaWDciTMFI0dCkvou3TL8Zmy5Nc7sJ47a0jtOeZoTaMxkuqRo9cRhjOdZJXegxYE5FN/xw==}
@@ -2942,10 +2935,6 @@ packages:
   etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
-
-  ethers@6.14.4:
-    resolution: {integrity: sha512-Jm/dzRs2Z9iBrT6e9TvGxyb5YVKAPLlpna7hjxH7KH/++DSh2T/JVmQUv7iHI5E55hDbp/gEVvstWYXVxXFzsA==}
-    engines: {node: '>=14.0.0'}
 
   ethers@6.15.0:
     resolution: {integrity: sha512-Kf/3ZW54L4UT0pZtsY/rf+EkBU7Qi5nnhonjUb8yTXcxH3cdcWrV2cRyk0Xk/4jK6OoHhxxZHriyhje20If2hQ==}
@@ -6041,18 +6030,6 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.18.2:
-    resolution: {integrity: sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: '>=5.0.2'
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
   ws@8.18.3:
     resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
     engines: {node: '>=10.0.0'}
@@ -7058,9 +7035,9 @@ snapshots:
       bitcoinjs-message: 2.2.0
       buffer: 6.0.3
       cross-fetch: 4.1.0
-      ethers: 6.14.4
-      isomorphic-ws: 5.0.0(ws@8.18.2)
-      ws: 8.18.2
+      ethers: 6.15.0
+      isomorphic-ws: 5.0.0(ws@8.18.3)
+      ws: 8.18.3
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -7080,28 +7057,6 @@ snapshots:
       ethers: 6.15.0
       isomorphic-ws: 5.0.0(ws@8.18.3)
       ws: 8.18.3
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-      - zod
-
-  '@ckb-ccc/core@1.9.0(typescript@4.9.5)':
-    dependencies:
-      '@joyid/ckb': 1.1.2(typescript@4.9.5)
-      '@noble/ciphers': 0.5.3
-      '@noble/curves': 1.9.2
-      '@noble/hashes': 1.8.0
-      abort-controller: 3.0.0
-      bech32: 2.0.0
-      bitcoinjs-message: 2.2.0
-      bs58check: 4.0.0
-      buffer: 6.0.3
-      cross-fetch: 4.1.0
-      ethers: 6.14.4
-      isomorphic-ws: 5.0.0(ws@8.18.2)
-      ws: 8.18.2
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -7554,10 +7509,6 @@ snapshots:
   '@noble/curves@1.2.0':
     dependencies:
       '@noble/hashes': 1.3.2
-
-  '@noble/curves@1.9.2':
-    dependencies:
-      '@noble/hashes': 1.8.0
 
   '@noble/curves@1.9.7':
     dependencies:
@@ -9648,19 +9599,6 @@ snapshots:
 
   etag@1.8.1: {}
 
-  ethers@6.14.4:
-    dependencies:
-      '@adraffy/ens-normalize': 1.10.1
-      '@noble/curves': 1.2.0
-      '@noble/hashes': 1.3.2
-      '@types/node': 22.7.5
-      aes-js: 4.0.0-beta.5
-      tslib: 2.7.0
-      ws: 8.17.1
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   ethers@6.15.0:
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
@@ -10379,10 +10317,6 @@ snapshots:
   isexe@2.0.0: {}
 
   isobject@3.0.1: {}
-
-  isomorphic-ws@5.0.0(ws@8.18.2):
-    dependencies:
-      ws: 8.18.2
 
   isomorphic-ws@5.0.0(ws@8.18.3):
     dependencies:
@@ -13109,7 +13043,7 @@ snapshots:
       sockjs: 0.3.24
       spdy: 4.0.2
       webpack-dev-middleware: 5.3.4(webpack@5.99.6)
-      ws: 8.18.2
+      ws: 8.18.3
     optionalDependencies:
       webpack: 5.99.6
     transitivePeerDependencies:
@@ -13407,8 +13341,6 @@ snapshots:
   ws@7.5.10: {}
 
   ws@8.17.1: {}
-
-  ws@8.18.2: {}
 
   ws@8.18.3: {}
 
